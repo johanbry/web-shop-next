@@ -1,3 +1,6 @@
+import Footer from "../components/footer/Footer";
+import Header from "../components/header/Header";
+
 export default function StoreLayout({
   children,
 }: {
@@ -5,9 +8,9 @@ export default function StoreLayout({
 }) {
   return (
     <>
-      <div>Header store</div>
+      <Header />
       <main>{children}</main>
-      <div>Footer store</div>
+      <Footer />
     </>
   );
 }
