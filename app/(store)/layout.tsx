@@ -1,5 +1,6 @@
-import Footer from "../components/footer/Footer";
-import Header from "../components/header/Header";
+import { Container } from "@mantine/core";
+import Footer from "../components/footer/footer";
+import Header from "../components/header/header";
 
 export default function StoreLayout({
   children,
@@ -9,7 +10,9 @@ export default function StoreLayout({
   return (
     <>
       <Header />
-      <main>{children}</main>
+      <Container component="main" fluid py="lg">
+        {children}
+      </Container>
       <Footer />
     </>
   );
