@@ -4,7 +4,7 @@ type Props = {
   categories: ICategoryInTree[];
 };
 
-const CategoriesMainMenu = ({ categories }: Props) => {
+const MainMenu = ({ categories }: Props) => {
   return (
     <div>
       CategoriesMainMenu
@@ -27,4 +27,4 @@ const CategoriesMainMenu = ({ categories }: Props) => {
   );
 };
 
-export default CategoriesMainMenu;
+export default MainMenu;
