@@ -46,7 +46,7 @@ export const convertCategoriesToTree = (
 
   for (let cat of category) {
     categoryList.push({
-      _id: cat._id,
+      _id: cat._id.toString(),
       name: cat.name,
       slug: cat.slug,
       children: convertCategoriesToTree(categories, cat._id),

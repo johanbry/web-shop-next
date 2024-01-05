@@ -8,8 +8,8 @@ export interface ICategory {
 }
 
 export interface ICategoryInTree {
-  _id: ObjectId;
+  _id: string;
   name: string;
   slug: string;
-  children: (ICategoryInTree | null)[] | null;
+  children?: (ICategoryInTree | null)[] | null;
 }
