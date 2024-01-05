@@ -4,22 +4,24 @@ import {
   ActionIcon,
   Box,
   Burger,
-  Center,
   Container,
   Drawer,
-  Flex,
   Group,
   Text,
-  TextInput,
 } from "@mantine/core";
 import { IconShoppingCart, IconUser, IconSearch } from "@tabler/icons-react";
 import Search from "../search/search";
 import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
+import SidebarMenu from "../navigation/sidebar-menu";
+import { ICategoryInTree } from "@/interfaces/interfaces";
+import MainMenu from "../navigation/main-menu";
 
-type Props = {};
+type Props = {
+  categories: ICategoryInTree[];
+};
 
-const Header = (props: Props) => {
+const Header = ({ categories }: Props) => {
   const [cartOpened, { toggle: toggleCart }] = useDisclosure(false);
   const [sidebarMenuOpened, { toggle: toggleSidebarMenu }] =
     useDisclosure(false);
@@ -63,7 +65,7 @@ const Header = (props: Props) => {
       </Container>
       <Container fluid bg="var(--mantine-color-gray-2)" visibleFrom="sm">
         <Container size="lg" px="0" py="xs">
-          Categories menu
+          <MainMenu categories={categories} />
         </Container>
       </Container>
       <Container
@@ -75,11 +77,20 @@ const Header = (props: Props) => {
           <Search />
         </Container>
       </Container>
-      <Drawer opened={cartOpened} onClose={toggleCart} position="right">
+      <Drawer
+        opened={cartOpened}
+        onClose={toggleCart}
+        position="right"
+        title="Kundvagn"
+      >
         Cart
       </Drawer>
-      <Drawer opened={sidebarMenuOpened} onClose={toggleSidebarMenu}>
-        Menu
+      <Drawer
+        opened={sidebarMenuOpened}
+        onClose={toggleSidebarMenu}
+        title="Kategorier"
+      >
+        <SidebarMenu categories={categories} />
       </Drawer>
     </>
   );
