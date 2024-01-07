@@ -64,7 +64,10 @@ const MainMenu = ({ categories }: Props) => {
                 </Button>
               </MenuTarget>
               <MenuDropdown visibleFrom="sm">
-                {renderMenu(category.children as ICategoryInTree[])}
+                {renderMenu(
+                  category.children as ICategoryInTree[],
+                  category.slug
+                )}
               </MenuDropdown>
             </>
           ) : (
