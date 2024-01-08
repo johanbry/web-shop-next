@@ -1,15 +1,23 @@
 import { Container } from "@mantine/core";
-import Footer from "../components/footer/footer";
-import Header from "../components/header/header";
 
-export default function StoreLayout({
+import { convertCategoriesToTree, getAllCategories } from "@/lib/category";
+import Header from "../components/header/header";
+import Footer from "../components/footer/footer";
+import connectToDB from "@/utils/db";
+
+export default async function StoreLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  await connectToDB();
+  const categories = await getAllCategories();
+  const categoriesTree = convertCategoriesToTree(categories);
+  console.log("catslay", categoriesTree);
+
   return (
     <>
-      <Header />
+      <Header categories={categoriesTree} />
       <Container component="main" fluid py="lg">
         {children}
       </Container>
