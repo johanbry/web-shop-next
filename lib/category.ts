@@ -48,6 +48,7 @@ export const convertCategoriesToTree = (
     categoryList.push({
       _id: cat._id.toString(),
       name: cat.name,
+      description: cat.description,
       slug: cat.slug,
       children: convertCategoriesToTree(categories, cat._id),
     });
@@ -73,4 +74,23 @@ export const getCategoryBySlug = async (slug: string) => {
   }
 
   return category;
+};
+
+/**
+ * Get sub categories for a category (one level down).
+ *
+ * @param id
+ * @returns categories
+ */
+
+export const getSubCategories = async (id: ObjectId) => {
+  let categories: ICategory[] = [];
+  try {
+    await connectToDB();
+    categories = await Category.find({ parent_id: id });
+  } catch (error) {
+    console.log((error as Error).message);
+  }
+
+  return categories;
 };
