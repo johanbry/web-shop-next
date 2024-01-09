@@ -15,7 +15,6 @@ const SidebarMenu = ({ categories, toggleSidebarMenu }: Props) => {
         rootPath=""
         toggleSidebarMenu={toggleSidebarMenu}
       />
-      <div onClick={() => toggleSidebarMenu()}>fdsdfsdds</div>
     </Box>
   );
 };
