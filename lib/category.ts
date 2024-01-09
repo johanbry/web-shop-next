@@ -55,3 +55,22 @@ export const convertCategoriesToTree = (
 
   return categoryList;
 };
+
+/**
+ * Get category by slug.
+ *
+ * @param slug
+ * @returns category
+ */
+
+export const getCategoryBySlug = async (slug: string) => {
+  let category: ICategory | null = null;
+  try {
+    await connectToDB();
+    category = await Category.findOne({ slug: slug });
+  } catch (error) {
+    console.log((error as Error).message);
+  }
+
+  return category;
+};
