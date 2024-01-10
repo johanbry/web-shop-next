@@ -20,8 +20,6 @@ export const fetchProducts = async (
   sortOrder?: string,
   searchTerm?: string
 ) => {
-  await setTimeout(1000);
-
   const products = getProducts(offset, limit, categoryId);
   return products || [];
 };
