@@ -1,4 +1,5 @@
 import Product from "@/models/Product";
+import { ObjectId } from "mongodb";
 import { PipelineStage, Schema } from "mongoose";
 
 /**
@@ -18,7 +19,7 @@ import { PipelineStage, Schema } from "mongoose";
 export const getProducts = async (
   offset: number = 0,
   limit: number = 2,
-  categoryId?: Schema.Types.ObjectId,
+  categoryId?: string,
   sortOrder?: string,
   searchTerm?: string
 ) => {
@@ -30,23 +31,26 @@ export const getProducts = async (
       $match: {
         categories: {
           $elemMatch: {
-            $eq: categoryId,
+            $eq: new ObjectId(categoryId),
           },
         },
       },
     });
   }
 
-  pipeline.push({ $addFields: { styleOptions: "$style" } });
+  pipeline.push({ $addFields: { style_options: "$style" } });
   pipeline.push({
     $unwind: { path: "$style.options", preserveNullAndEmptyArrays: true },
   });
-  pipeline.push({ $addFields: { styleProduct: "$style.options" } });
+  pipeline.push({ $addFields: { style_product: "$style.options" } });
   pipeline.push({ $unset: ["style"] });
   pipeline.push({ $skip: offset });
   pipeline.push({ $limit: limit });
 
-  products = await Product.aggregate(pipeline);
-
+  try {
+    products = await Product.aggregate(pipeline);
+  } catch (error) {
+    console.log((error as Error).message);
+  }
   return products;
 };
