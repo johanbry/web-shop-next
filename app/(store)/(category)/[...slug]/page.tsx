@@ -11,6 +11,8 @@ import { Metadata } from "next";
 import { getCategoryBySlug, getSubCategories } from "@/lib/category";
 import Link from "next/link";
 import { Fragment } from "react";
+import { getProducts } from "@/lib/product";
+import ProductList from "@/app/components/product/product-list";
 
 type Props = {
   params: { slug: string[] };
@@ -32,6 +34,8 @@ export default async function CategoryPage({ params }: Props) {
   const currentPath = params.slug.join("/"); // The path of the current category
   if (!category) return <div>Category not found</div>;
 
+  const productsLimit = 1;
+  const productsOffset = 0;
   const subCategories = await getSubCategories(category._id);
 
   const breadcrumbItems = await Promise.all(
@@ -67,6 +71,14 @@ export default async function CategoryPage({ params }: Props) {
     </Button>
   ));
 
+  let products = [];
+  products = await getProducts(
+    productsOffset,
+    productsLimit,
+    category._id.toString()
+  );
+  console.log("products", products);
+
   return (
     <Container size="lg">
       <Breadcrumbs mb={6}>{breadcrumbItems}</Breadcrumbs>
@@ -74,6 +86,11 @@ export default async function CategoryPage({ params }: Props) {
       <Text>{category?.description}</Text>
 
       <Box my={10}>{subCategoryItems}</Box>
+      <ProductList
+        initialProducts={products}
+        offset={productsOffset + productsLimit}
+        limit={productsLimit}
+      />
     </Container>
   );
 }
