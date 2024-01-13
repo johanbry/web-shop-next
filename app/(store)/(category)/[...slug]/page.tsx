@@ -11,8 +11,9 @@ import { Metadata } from "next";
 import { getCategoryBySlug, getSubCategories } from "@/lib/category";
 import Link from "next/link";
 import { Fragment } from "react";
-import { getProducts } from "@/lib/product";
+import { getProducts, totalProducts } from "@/lib/product";
 import ProductList from "@/app/components/product/product-list";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: { slug: string[] };
@@ -32,8 +33,9 @@ export default async function CategoryPage({ params }: Props) {
   const categorySlug = params.slug[params.slug.length - 1]; // The slug of the current category
   const category = await getCategoryBySlug(categorySlug);
   const currentPath = params.slug.join("/"); // The path of the current category
-  if (!category) return <div>Category not found</div>;
+  if (!category) notFound();
 
+  const total = await totalProducts(category._id.toString());
   const productsLimit = 1;
   const productsOffset = 0;
   const subCategories = await getSubCategories(category._id);
@@ -43,6 +45,7 @@ export default async function CategoryPage({ params }: Props) {
       const href = `/${params.slug.slice(0, index + 1).join("/")}`;
       const cat = await getCategoryBySlug(slug);
       const name = cat?.name;
+
       return (
         <Fragment key={index}>
           {index === 0 && (
@@ -50,9 +53,11 @@ export default async function CategoryPage({ params }: Props) {
               Hem
             </Anchor>
           )}
-          <Anchor size="sm" href={href}>
-            {name}
-          </Anchor>
+          {cat?.name && (
+            <Anchor size="sm" href={href}>
+              {name}
+            </Anchor>
+          )}
         </Fragment>
       );
     })
@@ -77,20 +82,26 @@ export default async function CategoryPage({ params }: Props) {
     productsLimit,
     category._id.toString()
   );
-  console.log("products", products);
 
   return (
-    <Container size="lg">
+    <Container size="lg" px={0}>
       <Breadcrumbs mb={6}>{breadcrumbItems}</Breadcrumbs>
       <Title mb={8}>{category?.name}</Title>
       <Text>{category?.description}</Text>
-
       <Box my={10}>{subCategoryItems}</Box>
-      <ProductList
-        initialProducts={products}
-        offset={productsOffset + productsLimit}
-        limit={productsLimit}
-      />
+      <Box my="var(--mantine-spacing-xl)">
+        {total > 0 ? (
+          <ProductList
+            initialProducts={products}
+            offset={productsOffset + productsLimit}
+            limit={productsLimit}
+            total={total}
+            categoryId={category._id.toString()}
+          />
+        ) : (
+          <Text>Inga produkter att visa</Text>
+        )}
+      </Box>
     </Container>
   );
 }
