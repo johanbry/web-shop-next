@@ -52,7 +52,8 @@ export const getProducts = async (
   } catch (error) {
     console.log((error as Error).message);
   }
-  return products;
+
+  return JSON.parse(JSON.stringify(products));
 };
 
 /**
@@ -82,7 +83,6 @@ export const totalProducts = async (categoryId?: string) => {
     });
   }
   const doc = await Product.aggregate(pipeline);
-  console.log("doc", doc);
   if (doc.length > 0) total = doc[0].total;
   return total;
 };
