@@ -1,17 +1,20 @@
-import Link from "next/link";
-
 import { ICategoryInTree } from "@/interfaces/interfaces";
-import { Box, NavLink } from "@mantine/core";
+import { Box } from "@mantine/core";
 import NavLinksCategories from "./navlinks-categories";
 
 type Props = {
   categories: ICategoryInTree[];
+  toggleSidebarMenu: () => void;
 };
 
-const SidebarMenu = ({ categories }: Props) => {
+const SidebarMenu = ({ categories, toggleSidebarMenu }: Props) => {
   return (
     <Box>
-      <NavLinksCategories categories={categories} rootPath="" />
+      <NavLinksCategories
+        categories={categories}
+        rootPath=""
+        toggleSidebarMenu={toggleSidebarMenu}
+      />
     </Box>
   );
 };

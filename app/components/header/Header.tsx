@@ -11,7 +11,6 @@ import {
 } from "@mantine/core";
 import { IconShoppingCart, IconUser, IconSearch } from "@tabler/icons-react";
 import Search from "../search/search";
-import { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import SidebarMenu from "../navigation/sidebar-menu";
 import { ICategoryInTree } from "@/interfaces/interfaces";
@@ -90,7 +89,10 @@ const Header = ({ categories }: Props) => {
         onClose={toggleSidebarMenu}
         title="Kategorier"
       >
-        <SidebarMenu categories={categories} />
+        <SidebarMenu
+          categories={categories}
+          toggleSidebarMenu={toggleSidebarMenu}
+        />
       </Drawer>
     </>
   );

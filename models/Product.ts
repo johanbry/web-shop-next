@@ -43,9 +43,9 @@ const ProductSchema = new Schema(
     style: {
       type: {
         type: String,
-        required: [true, "Please add a name"],
+        required: [true, "Please add a type"],
         trim: true,
-        maxlength: [50, "Name can not be more than 50 characters"],
+        maxlength: [50, "Type can not be more than 50 characters"],
       },
       options: [
         {
@@ -56,14 +56,19 @@ const ProductSchema = new Schema(
           name: {
             type: String,
             required: [true, "Please add a name"],
-            trim: true,
             maxlength: [50, "Name can not be more than 50 characters"],
           },
-
+          product_name: {
+            type: String,
+            maxlength: [50, "Name can not be more than 50 characters"],
+          },
           images: {
             type: [String],
           },
           thumbnail: {
+            type: String,
+          },
+          color: {
             type: String,
           },
           price: {
@@ -124,3 +129,5 @@ const ProductSchema = new Schema(
 
   { timestamps: true }
 );
+
+export default models.Product || model("Product", ProductSchema);

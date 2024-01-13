@@ -22,7 +22,7 @@ const MainMenu = ({ categories }: Props) => {
           <MenuTarget key={category._id}>
             <Button
               variant="transparent"
-              href={category.slug}
+              href={`/${category.slug}`}
               component={Link}
               rightSection={<IconChevronDown size={16} />}
             >
@@ -32,7 +32,7 @@ const MainMenu = ({ categories }: Props) => {
           <MenuDropdown visibleFrom="sm">
             <NavLinksCategories
               categories={category.children as ICategoryInTree[]}
-              rootPath={category.slug}
+              rootPath={`/${category.slug}`}
             />
           </MenuDropdown>
         </>
@@ -40,7 +40,7 @@ const MainMenu = ({ categories }: Props) => {
         <Button
           variant="transparent"
           component={Link}
-          href={category.slug}
+          href={`${category.slug}`}
           key={category._id}
         >
           {category.name}

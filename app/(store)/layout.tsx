@@ -18,7 +18,12 @@ export default async function StoreLayout({
   return (
     <>
       <Header categories={categoriesTree} />
-      <Container component="main" fluid py="lg">
+      <Container
+        component="main"
+        fluid
+        py="lg"
+        bg="var(--mantine-color-gray-0)"
+      >
         {children}
       </Container>
       <Footer />
