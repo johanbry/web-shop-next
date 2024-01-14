@@ -38,7 +38,6 @@ const ProductSchema = new Schema(
     },
     images: {
       type: [String],
-      default: "no-image.jpg",
     },
     style: {
       type: {
@@ -49,7 +48,7 @@ const ProductSchema = new Schema(
       },
       options: [
         {
-          article_id: {
+          style_id: {
             type: String,
             required: [true, "Please add a article_id"],
           },
@@ -57,6 +56,10 @@ const ProductSchema = new Schema(
             type: String,
             required: [true, "Please add a name"],
             maxlength: [50, "Name can not be more than 50 characters"],
+          },
+          slug: String,
+          description: {
+            type: String,
           },
           product_name: {
             type: String,
