@@ -3,6 +3,22 @@ import { ObjectId } from "mongodb";
 import { Document, PipelineStage, Schema } from "mongoose";
 
 /**
+ * Retrieves a product by its ID.
+ * @param id - The ID of the product.
+ * @returns A Promise that resolves to the product document, or null if not found.
+ */
+export const getProductById = async (id: string) => {
+  let product: Document | null = null;
+
+  try {
+    product = await Product.findOne({ product_id: id });
+  } catch (error) {
+    console.log((error as Error).message);
+  }
+  return product;
+};
+
+/**
  * Get products from database, depending on category, search term, sort order, offset and limit.
  *
  * @param offset
