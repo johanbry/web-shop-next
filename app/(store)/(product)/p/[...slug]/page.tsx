@@ -1,4 +1,6 @@
+import ProductAddToCart from "@/app/components/product/product-add-to-cart";
 import { getProductById } from "@/lib/product";
+import Product from "@/models/Product";
 import { Carousel, CarouselSlide } from "@mantine/carousel";
 import {
   Anchor,
@@ -11,12 +13,19 @@ import {
   Flex,
   AspectRatio,
   Paper,
+  Group,
+  Center,
+  Tooltip,
+  ColorSwatch,
+  Select,
 } from "@mantine/core";
 import { IconPhoto } from "@tabler/icons-react";
 import { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 
 import { notFound, permanentRedirect } from "next/navigation";
+import { Fragment } from "react";
 
 type Props = {
   params: { slug: string[] };
@@ -40,13 +49,15 @@ export default async function ProductPage({ params }: Props) {
 
   let productName: string = product.name;
   let productDescription: string = product.description;
-  let productImages: string[] = product.images;
+  let productImages: any[] = product.images;
   let productPrice: number = product.price; //Set default price to base product price
+  const imagesPath = "/products";
 
   const isStyleProduct =
     product.style && product.style.type && product.style.options.length > 0
       ? true
       : false; //Is the product a base product or a product created from a base product with style?
+
   let styleId: string | null = null; // The id of the product style
   let style: any = null; // The product style object
 
@@ -68,14 +79,27 @@ export default async function ProductPage({ params }: Props) {
     productPrice = style.price; //Set the style product price
   }
 
-  const imagesPath = "/products";
+  //Check if all style options have a color value
+  const hasColors = (styleOptions: any[]) => {
+    return styleOptions.every(
+      (option) =>
+        option.color && option.color !== undefined && option.color.length > 3
+    );
+  };
+
+  //Check if all style options have image
+  const hasImages = (styleOptions: any[]) => {
+    return styleOptions.every(
+      (option) => option.images && option.images[0].filename.length > 5
+    );
+  };
 
   const carouselSlides = productImages.map((image, index) => (
     <CarouselSlide key={index}>
       <AspectRatio ratio={1 / 1}>
         <Image
-          alt={productName}
-          src={`${imagesPath}/${image}`}
+          alt={image.title || productName}
+          src={`${imagesPath}/${image.filename}`}
           fill
           style={{ objectFit: "contain" }}
           priority
@@ -121,8 +145,8 @@ export default async function ProductPage({ params }: Props) {
             ) : (
               <AspectRatio ratio={1 / 1}>
                 <Image
-                  alt={productName}
-                  src={`${imagesPath}/${productImages[0]}`}
+                  alt={productImages[0].title || productName}
+                  src={`${imagesPath}/${productImages[0].filename}`}
                   fill
                   style={{ objectFit: "contain" }}
                   priority
@@ -136,21 +160,112 @@ export default async function ProductPage({ params }: Props) {
             </AspectRatio>
           )}
         </Paper>
-        <Box w={{ base: "100", sm: "400", lg: "450" }}>
+        <Box w={{ base: "100%", sm: "400", lg: "450" }}>
           <Title order={3} style={{ textTransform: "uppercase" }}>
             {productName}
           </Title>
           <Text size="xl">{productPrice} kr</Text>
-          <Text>Titel och val köpa knapp</Text>
+          {isStyleProduct && (
+            <>
+              <Box mt="lg" mb="xs">
+                <Text component="span" fw="bold">
+                  {product.style.type}:
+                </Text>
+                <Text component="span"> {style.name}</Text>
+              </Box>
+              <Group>
+                {product.style.options.map((option: any) => {
+                  return (
+                    <Box key={option.style_id}>
+                      {hasImages(product.style.options) && (
+                        <>
+                          <Paper
+                            withBorder
+                            style={
+                              option.style_id === styleId
+                                ? { borderColor: "var(--mantine-color-black)" }
+                                : {}
+                            }
+                          >
+                            <Tooltip label={option.name} withArrow>
+                              <Link
+                                href={`/p/${product.product_id}/${option.style_id}/${option.slug}`}
+                              >
+                                <Box w={100} p={5}>
+                                  <AspectRatio ratio={1 / 1}>
+                                    <Image
+                                      src={`${imagesPath}/${option.images[0].filename}`}
+                                      fill
+                                      alt={option.name}
+                                      style={{
+                                        objectFit: "contain",
+                                      }}
+                                      sizes="(max-width: 768px) 25vw, (max-width: 1200px) 20vw, 15vw"
+                                    />
+                                  </AspectRatio>
+                                </Box>
+                              </Link>
+                            </Tooltip>
+                          </Paper>
+                          <Center>
+                            <Text size="xs">{option.name}</Text>
+                          </Center>
+                        </>
+                      )}
+                      {!hasImages(product.style.options) &&
+                        hasColors(product.style.options) && (
+                          <Tooltip label={option.name} withArrow>
+                            <Link
+                              href={`/p/${product.product_id}/${option.style_id}/${option.slug}`}
+                            >
+                              <ColorSwatch
+                                color={option.color}
+                                size={30}
+                                style={
+                                  option.style_id === styleId
+                                    ? {
+                                        border:
+                                          "2px var(--mantine-color-gray-6) solid",
+                                      }
+                                    : {}
+                                }
+                              />
+                            </Link>
+                          </Tooltip>
+                        )}
+
+                      {!hasImages(product.style.options) &&
+                        !hasColors(product.style.options) && (
+                          <Link
+                            href={`/p/${product.product_id}/${option.style_id}/${option.slug}`}
+                          >
+                            <Button
+                              variant={
+                                option.style_id === styleId
+                                  ? "filled"
+                                  : "outline"
+                              }
+                              color="var(--mantine-color-gray-7)"
+                              style={{ textTransform: "uppercase" }}
+                            >
+                              {option.name}
+                            </Button>
+                          </Link>
+                        )}
+                    </Box>
+                  );
+                })}
+              </Group>
+            </>
+          )}
+          <Box>
+            <ProductAddToCart product={product} />
+          </Box>
         </Box>
       </Flex>
-      <Box maw="var(--mantine-breakpoint-sm)">
+      <Box maw="var(--mantine-breakpoint-sm)" mt="xl">
         <Title order={4}>Produktbeskrivning</Title>
         <Text>{productDescription}</Text>
-        <Text>ProdId?{productId}</Text>
-        <Text>Styleprod?{JSON.stringify(isStyleProduct)}</Text>
-        <Text>StyleId?{styleId}</Text>
-        <Text mb={4}>{JSON.stringify(style)}</Text>
       </Box>
     </Container>
   );
