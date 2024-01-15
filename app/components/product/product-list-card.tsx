@@ -20,7 +20,7 @@ type Props = {
 
 const ProductListCard = ({ product }: Props) => {
   let productHref = `p/${product.product_id}`;
-  let productImage: string | undefined;
+  let productImage: any | undefined;
   const imagesPath = "/products";
 
   const isStyleProduct = product.style_product ? true : false; //Is the product a base product or a product created from a base product with style?
@@ -73,8 +73,8 @@ const ProductListCard = ({ product }: Props) => {
             style={{ objectFit: "contain" }}
             component={NextImage}
             fill
-            src={`${imagesPath}/${productImage}`}
-            alt={product.name}
+            src={`${imagesPath}/${productImage.filename}`}
+            alt={productImage.title || product.name}
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
           />
         ) : (
