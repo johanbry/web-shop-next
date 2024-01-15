@@ -15,7 +15,7 @@ export const getProductById = async (id: string) => {
   } catch (error) {
     console.log((error as Error).message);
   }
-  return product;
+  return JSON.parse(JSON.stringify(product));
 };
 
 /**
