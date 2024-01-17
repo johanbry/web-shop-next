@@ -50,7 +50,7 @@ export default async function ProductPage({ params }: Props) {
   let productName: string = product.name;
   let productDescription: string = product.description;
   let productImages: any[] = product.images;
-  let productPrice: number = product.price; //Set default price to base product price
+
   const imagesPath = "/products";
 
   const isStyleProduct =
@@ -76,7 +76,6 @@ export default async function ProductPage({ params }: Props) {
       );
 
     productImages = [...style.images, ...productImages]; //Combine the base product images with the style product images
-    productPrice = style.price; //Set the style product price
   }
 
   //Check if all style options have a color value
@@ -164,7 +163,7 @@ export default async function ProductPage({ params }: Props) {
           <Title order={3} style={{ textTransform: "uppercase" }}>
             {productName}
           </Title>
-          <Text size="xl">{productPrice} kr</Text>
+
           {isStyleProduct && (
             <>
               <Box mt="lg" mb="xs">
@@ -259,7 +258,7 @@ export default async function ProductPage({ params }: Props) {
             </>
           )}
           <Box>
-            <ProductAddToCart product={product} />
+            <ProductAddToCart product={product} style={style} />
           </Box>
         </Box>
       </Flex>
