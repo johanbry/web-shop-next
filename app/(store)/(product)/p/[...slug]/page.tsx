@@ -1,4 +1,5 @@
 import ProductAddToCart from "@/app/components/product/product-add-to-cart";
+import { getParentCategories } from "@/lib/category";
 import { getProductById } from "@/lib/product";
 import Product from "@/models/Product";
 import { Carousel, CarouselSlide } from "@mantine/carousel";
@@ -108,9 +109,37 @@ export default async function ProductPage({ params }: Props) {
     </CarouselSlide>
   ));
 
+  const parentCategories = await getParentCategories(product.categories[0]);
+  const categorySlugs = parentCategories.map((cat) => cat.slug);
+
+  const breadcrumbItems = parentCategories.map((cat, index) => {
+    const href = `/${categorySlugs.slice(0, index + 1).join("/")}`;
+    const name = cat?.name;
+
+    return (
+      <Fragment key={index}>
+        {index === 0 && (
+          <Anchor size="sm" href={"/"}>
+            Hem
+          </Anchor>
+        )}
+        {cat?.name && (
+          <Anchor size="sm" href={href}>
+            {name}
+          </Anchor>
+        )}
+      </Fragment>
+    );
+  });
+
   return (
     <Container size="lg" px={0}>
-      {/* <Breadcrumbs mb={6}>{breadcrumbItems}</Breadcrumbs> */}
+      <Breadcrumbs mb="xs">
+        {breadcrumbItems}
+        <Text component="span" size="sm">
+          {productName}
+        </Text>
+      </Breadcrumbs>
       <Flex direction={{ base: "column", sm: "row" }} gap="xl">
         <Paper
           withBorder
