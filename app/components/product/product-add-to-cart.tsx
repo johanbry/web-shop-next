@@ -96,13 +96,16 @@ const ProductAddToCart = ({ product, style }: Props) => {
 
   return (
     <>
-      <Text size="xl">{price} kr</Text>
+      <Text size="xl" my="xl" style={{ fontSize: "30px", fontWeight: "bold" }}>
+        {price} kr
+      </Text>
       {!(hasVariant && !selectedVariantValue) && (
         <Text size="sm">Antal i lager: {stock}</Text>
       )}
 
       {hasVariant && (
         <Select
+          mt="sm"
           size="xl"
           placeholder={`Välj ${variant.type}`}
           data={variantOptions(variant, style)}
@@ -114,6 +117,7 @@ const ProductAddToCart = ({ product, style }: Props) => {
       )}
 
       <Button
+        mt="lg"
         size="xl"
         fullWidth
         onClick={addToCartButtonHandler}
