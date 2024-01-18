@@ -1,38 +1,48 @@
 "use client";
 
+import {
+  IProduct,
+  IProductCombination,
+  IProductStyleOption,
+  IProductVariant,
+  IProductVariantOption,
+  IVariantSelectOption,
+} from "@/interfaces/interfaces";
 import { Button, Select, Text } from "@mantine/core";
-import { set } from "mongoose";
 import { useState } from "react";
 
 type Props = {
-  product: any;
-  style?: any;
+  product: IProduct;
+  style?: IProductStyleOption | undefined | null;
 };
 
 const ProductAddToCart = ({ product, style }: Props) => {
-  const variant: any = product.variant;
-  const hasVariant = variant && variant.options.length > 0 ? true : false; //Does the product have a variant? (like size)
-  const isStyleProduct = style ? true : false; //Is the product a base product or a product created from a style (like color)?
+  const variant: IProductVariant | undefined = product.variant;
+
+  const hasVariant =
+    variant?.options && variant.options.length > 0 ? true : false; //Does the product have a variant? (like size)
+
   const allowOutOfStock = false; //Prepared for future feature
 
   const [selectedVariantValue, setSelectedVariantValue] = useState<
     string | null
   >(null);
 
-  const [selectedCombination, setSelectedCombination] = useState<any | null>(
-    null
-  );
+  const [selectedCombination, setSelectedCombination] = useState<
+    IProductCombination | undefined
+  >();
 
   const [errorNotSelected, setErrorNotSelected] = useState<string | null>(null);
 
   const [stock, setStock] = useState<number>(() => {
-    if (isStyleProduct) return style.stock;
+    if (style) return style.stock;
     return product.stock;
   });
 
   const [price, setPrice] = useState<number>(() => {
-    if (isStyleProduct) return style.price;
+    if (style) return style.price;
     return product.price;
+    //TODO: If has variant, set the price to the cheapest combination and say from price?
   });
 
   const variantChangeHandler = (value: string | null) => {
@@ -40,14 +50,33 @@ const ProductAddToCart = ({ product, style }: Props) => {
     setErrorNotSelected(null);
     if (value) {
       const selectedCombo = getCombination(value, style?.name);
-      setStock(selectedCombo.stock);
-      setPrice(selectedCombo.price);
-      setSelectedCombination(selectedCombo);
+      if (selectedCombo) {
+        setStock(selectedCombo.stock);
+        setPrice(selectedCombo.price);
+        setSelectedCombination(selectedCombo);
+      }
     }
   };
 
-  const variantOptions = (variant: any, style: any) => {
-    const options = variant.options.reduce((acc: any, option: any) => {
+  const getCombination = (
+    optionName: string,
+    styleName: string | null = null
+  ) => {
+    const combination = product.combinations?.find(
+      (combination: IProductCombination) => {
+        if (!styleName) return combination.variant_name === optionName;
+        else
+          return (
+            combination.variant_name === optionName &&
+            combination.style_name === styleName
+          );
+      }
+    );
+    return combination;
+  };
+
+  const variantOptions = variant?.options?.reduce(
+    (options: IVariantSelectOption[], option: IProductVariantOption) => {
       const combination = getCombination(option.name, style?.name);
 
       if (combination && !combination.hide) {
@@ -60,28 +89,12 @@ const ProductAddToCart = ({ product, style }: Props) => {
           item.disabled = true;
           item.label = `${option.name} (Ej i lager)`;
         }
-        acc.push(item);
+        options.push(item);
       }
-      return acc;
-    }, []);
-
-    return options;
-  };
-
-  const getCombination = (
-    optionName: string,
-    styleName: string | null = null
-  ) => {
-    const combination = product.combinations.find((combination: any) => {
-      if (!styleName) return combination.variant_name === optionName;
-      else
-        return (
-          combination.variant_name === optionName &&
-          combination.style_name === styleName
-        );
-    });
-    return combination;
-  };
+      return options;
+    },
+    []
+  );
 
   const addToCartButtonHandler = () => {
     if (hasVariant && !selectedVariantValue) {
@@ -107,8 +120,8 @@ const ProductAddToCart = ({ product, style }: Props) => {
         <Select
           mt="sm"
           size="xl"
-          placeholder={`Välj ${variant.type}`}
-          data={variantOptions(variant, style)}
+          placeholder={`Välj ${variant?.type}`}
+          data={variantOptions}
           value={selectedVariantValue}
           allowDeselect={false}
           onChange={(value) => variantChangeHandler(value)}

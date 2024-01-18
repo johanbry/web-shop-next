@@ -4,9 +4,10 @@ import { useState } from "react";
 import ProductListCard from "./product-list-card";
 import { Box, Button, Center, Grid, GridCol, Stack, Text } from "@mantine/core";
 import { fetchProducts } from "@/actions/product";
+import { IAggregatedProduct } from "@/interfaces/interfaces";
 
 type Props = {
-  initialProducts: any[];
+  initialProducts: IAggregatedProduct[];
   offset: number;
   limit: number;
   total: number;
@@ -24,7 +25,8 @@ const ProductList = ({
   sortOrder,
   searchTerm,
 }: Props) => {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] =
+    useState<IAggregatedProduct[]>(initialProducts);
   const [productsOffset, setProductsOffset] = useState(offset);
   const [isLoading, setIsLoading] = useState(false);
 

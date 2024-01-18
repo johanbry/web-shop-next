@@ -1,3 +1,4 @@
+import { IAggregatedProduct, IProduct } from "@/interfaces/interfaces";
 import Product from "@/models/Product";
 import { ObjectId } from "mongodb";
 import { Document, PipelineStage, Schema } from "mongoose";
@@ -8,7 +9,7 @@ import { Document, PipelineStage, Schema } from "mongoose";
  * @returns A Promise that resolves to the product document, or null if not found.
  */
 export const getProductById = async (id: string) => {
-  let product: Document | null = null;
+  let product: IProduct | null = null;
 
   try {
     product = await Product.findOne({ product_id: id });
@@ -39,7 +40,7 @@ export const getProducts = async (
   sortOrder?: string,
   searchTerm?: string
 ) => {
-  let products: Document[] = [];
+  let products: IAggregatedProduct[] = [];
   const pipeline: PipelineStage[] = [];
 
   if (categoryId) {
@@ -69,7 +70,7 @@ export const getProducts = async (
     console.log((error as Error).message);
   }
 
-  return JSON.parse(JSON.stringify(products));
+  return JSON.parse(JSON.stringify(products)) as IAggregatedProduct[];
 };
 
 /**

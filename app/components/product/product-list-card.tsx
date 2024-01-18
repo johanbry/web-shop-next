@@ -13,35 +13,42 @@ import {
 import Link from "next/link";
 import NextImage from "next/image";
 import { IconPhoto } from "@tabler/icons-react";
+import {
+  IAggregatedProduct,
+  IProductImage,
+  IProductStyleOption,
+} from "@/interfaces/interfaces";
 
 type Props = {
-  product: any;
+  product: IAggregatedProduct;
 };
 
 const ProductListCard = ({ product }: Props) => {
   let productHref = `p/${product.product_id}`;
-  let productImage: any | undefined;
+  let productImage: IProductImage | undefined;
   const imagesPath = "/products";
 
   const isStyleProduct = product.style_product ? true : false; //Is the product a base product or a product created from a base product with style?
   let productPrice;
-  let styleOptions: any[] = [];
-  let styleType: string = "";
+  let styleOptions: IProductStyleOption[] | undefined = [];
+  let styleType: string | undefined = "";
 
   if (isStyleProduct) {
-    productPrice = `${product.style_product.price} kr`;
-    productImage = product.style_product.images[0] || product.images[0]; //If the style product has no images, use the base product image
-    styleOptions = product.style_options.options;
-    styleType = product.style_options.type;
-    productHref = `/${productHref}/${product.style_product.style_id}/${product.style_product.slug}`;
+    productPrice = `${product.style_product?.price} kr`;
+    productImage =
+      (product.style_product?.images && product.style_product?.images[0]) ||
+      (product.images && product.images[0]); //If the style product has no images, use the base product image
+    styleOptions = product.style_options?.options;
+    styleType = product.style_options?.type;
+    productHref = `/${productHref}/${product.style_product?.style_id}/${product.style_product?.slug}`;
   } else {
     productPrice = `${product.price} kr`;
-    productImage = product.images[0];
+    productImage = product.images && product.images[0];
     productHref = `/${productHref}/${product.slug}`;
   }
 
   //Check if all style options have a color value
-  const hasColors = (styleOptions: any[]) => {
+  const hasColors = (styleOptions: IProductStyleOption[]) => {
     return styleOptions.every(
       (option) =>
         option.color && option.color !== undefined && option.color.length > 3
@@ -49,11 +56,11 @@ const ProductListCard = ({ product }: Props) => {
   };
 
   //Render color swatches for all for the base style options
-  const colorSwatches = (styleOptions: any[]) => {
+  const colorSwatches = (styleOptions: IProductStyleOption[]) => {
     return (
       <Group gap="5">
         {styleOptions.map((option, index) => (
-          <ColorSwatch color={option.color} key={index} size={14} />
+          <ColorSwatch color={option.color ?? ""} key={index} size={14} />
         ))}
       </Group>
     );
@@ -93,16 +100,16 @@ const ProductListCard = ({ product }: Props) => {
           </Title>
           {isStyleProduct && (
             <Text style={{ textTransform: "uppercase" }} size="xs">
-              {product.style_product.name}
+              {product.style_product?.name}
             </Text>
           )}
         </Box>
 
         {isStyleProduct &&
-          (hasColors(styleOptions) ? (
+          (styleOptions && hasColors(styleOptions) ? (
             colorSwatches(styleOptions)
           ) : (
-            <Text size="xs">Finns i {styleOptions.length} utföranden</Text>
+            <Text size="xs">Finns i {styleOptions?.length} utföranden</Text>
           ))}
 
         <Text style={{ fontWeight: "bolder" }}>{productPrice}</Text>

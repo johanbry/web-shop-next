@@ -1,4 +1,9 @@
 import ProductAddToCart from "@/app/components/product/product-add-to-cart";
+import {
+  IProduct,
+  IProductImage,
+  IProductStyleOption,
+} from "@/interfaces/interfaces";
 import { getParentCategories } from "@/lib/category";
 import { getProductById } from "@/lib/product";
 import Product from "@/models/Product";
@@ -34,7 +39,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const productId = params.slug[0]; // The product id of the product
-  const product: any = await getProductById(productId);
+  const product: IProduct = await getProductById(productId);
 
   return {
     title: product?.name,
@@ -44,13 +49,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const productId = params.slug[0]; //The product id of the product
-  const product: any = await getProductById(productId);
+  const product: IProduct = await getProductById(productId);
 
   if (!product) notFound();
 
   let productName: string = product.name;
-  let productDescription: string = product.description;
-  let productImages: any[] = product.images;
+  let productDescription: string | undefined = product.description;
+  let productImages: IProductImage[] | undefined = product.images;
 
   const imagesPath = "/products";
 
@@ -60,41 +65,45 @@ export default async function ProductPage({ params }: Props) {
       : false; //Is the product a base product or a product created from a base product with style?
 
   let styleId: string | null = null; // The id of the product style
-  let style: any = null; // The product style object
+  let currentStyle: IProductStyleOption | null | undefined = null; // The product style object
+  const styleOptions: IProductStyleOption[] | undefined =
+    product.style?.options; // The style options of the product
+  let styleHasColors: boolean = false; // Does the product style have colors?
+  let styleHasImages: boolean = false; // Does the product style have images?
 
   if (isStyleProduct) {
     styleId = params.slug[1]; //The style id from the url
 
     //Find the style object that matches the style id from the url
-    style = product.style.options.find(
-      (option: any) => option.style_id === styleId
+    currentStyle = styleOptions?.find(
+      (option: IProductStyleOption) => option.style_id === styleId
     );
 
     //If a style product has no matching style id in the url, redirect to the first style
-    if (!style)
+    if (!currentStyle)
       permanentRedirect(
-        `/p/${productId}/${product.style.options[0].style_id}/${product.style.options[0].slug}`
+        `/p/${productId}/${product.style?.options[0].style_id}/${product.style?.options[0].slug}`
       );
 
-    productImages = [...style.images, ...productImages]; //Combine the base product images with the style product images
+    productImages = [...(currentStyle?.images || []), ...(productImages || [])]; //Combine the base product images with the style product images
+
+    //Check if all style options have a color value
+    styleHasColors =
+      styleOptions !== undefined &&
+      styleOptions.every(
+        (option) =>
+          option.color && option.color !== undefined && option.color.length > 3
+      );
+
+    //Check if all style options have an image
+    styleHasImages =
+      styleOptions !== undefined &&
+      styleOptions.every(
+        (option) => option.images && option.images[0].filename.length > 5
+      );
   }
 
-  //Check if all style options have a color value
-  const hasColors = (styleOptions: any[]) => {
-    return styleOptions.every(
-      (option) =>
-        option.color && option.color !== undefined && option.color.length > 3
-    );
-  };
-
-  //Check if all style options have image
-  const hasImages = (styleOptions: any[]) => {
-    return styleOptions.every(
-      (option) => option.images && option.images[0].filename.length > 5
-    );
-  };
-
-  const carouselSlides = productImages.map((image, index) => (
+  const carouselSlides = productImages?.map((image, index) => (
     <CarouselSlide key={index}>
       <AspectRatio ratio={1 / 1}>
         <Image
@@ -197,15 +206,15 @@ export default async function ProductPage({ params }: Props) {
             <>
               <Box mt="lg" mb="xs">
                 <Text component="span" fw="bold">
-                  {product.style.type}:
+                  {product.style?.type}:
                 </Text>
-                <Text component="span"> {style.name}</Text>
+                <Text component="span"> {currentStyle?.name}</Text>
               </Box>
               <Group>
-                {product.style.options.map((option: any) => {
+                {product.style?.options.map((option: IProductStyleOption) => {
                   return (
                     <Box key={option.style_id}>
-                      {hasImages(product.style.options) && (
+                      {styleHasImages && (
                         <>
                           <Paper
                             withBorder
@@ -222,7 +231,9 @@ export default async function ProductPage({ params }: Props) {
                                 <Box w={100} p={5}>
                                   <AspectRatio ratio={1 / 1}>
                                     <Image
-                                      src={`${imagesPath}/${option.images[0].filename}`}
+                                      src={`${imagesPath}/${
+                                        option.images![0].filename
+                                      }`}
                                       fill
                                       alt={option.name}
                                       style={{
@@ -240,46 +251,42 @@ export default async function ProductPage({ params }: Props) {
                           </Center>
                         </>
                       )}
-                      {!hasImages(product.style.options) &&
-                        hasColors(product.style.options) && (
-                          <Tooltip label={option.name} withArrow>
-                            <Link
-                              href={`/p/${product.product_id}/${option.style_id}/${option.slug}`}
-                            >
-                              <ColorSwatch
-                                color={option.color}
-                                size={30}
-                                style={
-                                  option.style_id === styleId
-                                    ? {
-                                        border:
-                                          "2px var(--mantine-color-gray-6) solid",
-                                      }
-                                    : {}
-                                }
-                              />
-                            </Link>
-                          </Tooltip>
-                        )}
-
-                      {!hasImages(product.style.options) &&
-                        !hasColors(product.style.options) && (
+                      {!styleHasImages && styleHasColors && (
+                        <Tooltip label={option.name} withArrow>
                           <Link
                             href={`/p/${product.product_id}/${option.style_id}/${option.slug}`}
                           >
-                            <Button
-                              variant={
+                            <ColorSwatch
+                              color={option.color!}
+                              size={30}
+                              style={
                                 option.style_id === styleId
-                                  ? "filled"
-                                  : "outline"
+                                  ? {
+                                      border:
+                                        "2px var(--mantine-color-gray-6) solid",
+                                    }
+                                  : {}
                               }
-                              color="var(--mantine-color-gray-7)"
-                              style={{ textTransform: "uppercase" }}
-                            >
-                              {option.name}
-                            </Button>
+                            />
                           </Link>
-                        )}
+                        </Tooltip>
+                      )}
+
+                      {!styleHasImages && !styleHasColors && (
+                        <Link
+                          href={`/p/${product.product_id}/${option.style_id}/${option.slug}`}
+                        >
+                          <Button
+                            variant={
+                              option.style_id === styleId ? "filled" : "outline"
+                            }
+                            color="var(--mantine-color-gray-7)"
+                            style={{ textTransform: "uppercase" }}
+                          >
+                            {option.name}
+                          </Button>
+                        </Link>
+                      )}
                     </Box>
                   );
                 })}
@@ -287,7 +294,7 @@ export default async function ProductPage({ params }: Props) {
             </>
           )}
           <Box>
-            <ProductAddToCart product={product} style={style} />
+            <ProductAddToCart product={product} style={currentStyle} />
           </Box>
         </Box>
       </Flex>
