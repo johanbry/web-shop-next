@@ -19,9 +19,9 @@ type Props = {
 };
 
 const ProductListCard = ({ product }: Props) => {
-  let productHref = `/product/${product.slug}`;
-  let productImage = "no_image.jpg";
-  const productsPath = "/products";
+  let productHref = `p/${product.product_id}`;
+  let productImage: any | undefined;
+  const imagesPath = "/products";
 
   const isStyleProduct = product.style_product ? true : false; //Is the product a base product or a product created from a base product with style?
   let productPrice;
@@ -30,12 +30,14 @@ const ProductListCard = ({ product }: Props) => {
 
   if (isStyleProduct) {
     productPrice = `${product.style_product.price} kr`;
-    productImage = product.style_product.images[0];
+    productImage = product.style_product.images[0] || product.images[0]; //If the style product has no images, use the base product image
     styleOptions = product.style_options.options;
     styleType = product.style_options.type;
+    productHref = `/${productHref}/${product.style_product.style_id}/${product.style_product.slug}`;
   } else {
     productPrice = `${product.price} kr`;
     productImage = product.images[0];
+    productHref = `/${productHref}/${product.slug}`;
   }
 
   //Check if all style options have a color value
@@ -46,7 +48,7 @@ const ProductListCard = ({ product }: Props) => {
     );
   };
 
-  //Render color swatches for style options
+  //Render color swatches for all for the base style options
   const colorSwatches = (styleOptions: any[]) => {
     return (
       <Group gap="5">
@@ -63,7 +65,7 @@ const ProductListCard = ({ product }: Props) => {
       component={Link}
       href={productHref}
       p={8}
-      style={{ borderColor: "#efefef" }}
+      style={{ borderColor: "var(--mantine-color-gray-1)" }}
     >
       <AspectRatio ratio={1 / 1}>
         {productImage ? (
@@ -71,8 +73,8 @@ const ProductListCard = ({ product }: Props) => {
             style={{ objectFit: "contain" }}
             component={NextImage}
             fill
-            src={`${productsPath}/${productImage}`}
-            alt={product.name}
+            src={`${imagesPath}/${productImage.filename}`}
+            alt={productImage.title || product.name}
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
           />
         ) : (

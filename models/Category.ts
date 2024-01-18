@@ -14,6 +14,9 @@ const CategorySchema = new Schema({
     unique: true,
     required: true,
   },
+  order: {
+    type: Number,
+  },
   parent_id: {
     type: Schema.Types.ObjectId,
     ref: "Category",

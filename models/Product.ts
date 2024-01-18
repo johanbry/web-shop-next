@@ -5,6 +5,7 @@ const ProductSchema = new Schema(
     product_id: {
       type: String,
       required: [true, "Please add a article_id"],
+      unique: [true, "Id already exists"],
     },
     show: {
       type: Boolean,
@@ -36,10 +37,20 @@ const ProductSchema = new Schema(
       type: [Schema.Types.ObjectId],
       ref: "Category",
     },
-    images: {
-      type: [String],
-      default: "no-image.jpg",
-    },
+    images: [
+      {
+        title: {
+          type: String,
+        },
+        order: {
+          type: Number,
+        },
+        filename: {
+          type: String,
+          required: [true, "Please add a filename"],
+        },
+      },
+    ],
     style: {
       type: {
         type: String,
@@ -49,22 +60,38 @@ const ProductSchema = new Schema(
       },
       options: [
         {
-          article_id: {
+          style_id: {
             type: String,
             required: [true, "Please add a article_id"],
+            unique: [true, "Id already exists"],
           },
           name: {
             type: String,
             required: [true, "Please add a name"],
             maxlength: [50, "Name can not be more than 50 characters"],
           },
+          slug: String,
+          description: {
+            type: String,
+          },
           product_name: {
             type: String,
             maxlength: [50, "Name can not be more than 50 characters"],
           },
-          images: {
-            type: [String],
-          },
+          images: [
+            {
+              title: {
+                type: String,
+              },
+              order: {
+                type: Number,
+              },
+              filename: {
+                type: String,
+                required: [true, "Please add a filename"],
+              },
+            },
+          ],
           thumbnail: {
             type: String,
           },
@@ -104,22 +131,6 @@ const ProductSchema = new Schema(
               required: [true, "Please add a name"],
               trim: true,
               maxlength: [50, "Name can not be more than 50 characters"],
-            },
-
-            price: {
-              type: Number,
-              required: [true, "Please add a price"],
-              maxlength: [5, "Price can not be more than 5 characters"],
-              default: 0,
-            },
-            sku: {
-              type: String,
-            },
-            stock: {
-              type: Number,
-              required: [true, "Please add a stock"],
-              maxlength: [5, "Stock can not be more than 5 characters"],
-              default: 0,
             },
           },
         ],

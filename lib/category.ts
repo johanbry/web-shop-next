@@ -94,3 +94,36 @@ export const getSubCategories = async (id: ObjectId) => {
 
   return categories;
 };
+
+/**
+ * Retrieves the parent categories of a given category ID, including the category itself.
+ *
+ * @param id - The ID of the category.
+ * @returns An array of parent categories, starting from the immediate parent and going up the hierarchy.
+ */
+export const getParentCategories = async (id: ObjectId) => {
+  let categories: ICategory[] = [];
+  const parentCategories: ICategory[] = [];
+  try {
+    categories = await getAllCategories();
+  } catch (error) {
+    console.log((error as Error).message);
+  }
+  let currentCategory = categories.find(
+    (cat) => cat._id.toString() === id.toString()
+  );
+
+  parentCategories.unshift(currentCategory!);
+
+  while (currentCategory?.parent_id) {
+    const nextCategory = categories.find(
+      (cat) => cat._id.toString() === currentCategory?.parent_id?.toString()
+    );
+    if (nextCategory) {
+      parentCategories.unshift(nextCategory);
+    }
+    currentCategory = nextCategory;
+  }
+
+  return parentCategories;
+};

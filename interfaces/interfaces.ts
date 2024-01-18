@@ -5,6 +5,7 @@ export interface ICategory {
   name: string;
   description?: string;
   slug: string;
+  order?: number;
   parent_id?: ObjectId | null;
 }
 
@@ -13,5 +14,6 @@ export interface ICategoryInTree {
   name: string;
   description?: string;
   slug: string;
+  order?: number;
   children?: (ICategoryInTree | null)[] | null;
 }
