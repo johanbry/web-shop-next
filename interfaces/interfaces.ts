@@ -18,7 +18,7 @@ export interface ICategoryInTree {
   children?: (ICategoryInTree | null)[] | null;
 }
 
-export interface IProduct {
+interface IBaseProduct {
   product_id: string;
   show: boolean;
   name: string;
@@ -28,26 +28,17 @@ export interface IProduct {
   stock: number;
   categories: ObjectId[];
   images?: IProductImage[];
-  style?: IProductStyle;
   variant?: IProductVariant;
   combinations?: IProductCombination[];
 }
+export interface IProduct extends IBaseProduct {
+  style?: IProductStyle;
+}
 
-export interface IAggregatedProduct {
+export interface IAggregatedProduct extends IBaseProduct {
   _id: string;
-  product_id: string;
-  show: boolean;
-  name: string;
-  slug: string;
-  description?: string;
-  price: number;
-  stock: number;
-  categories: ObjectId[];
-  images?: IProductImage[];
   style_options?: IProductStyle;
   style_product?: IProductStyleOption;
-  variant?: IProductVariant;
-  combinations?: IProductCombination[];
 }
 
 export interface IProductImage {
