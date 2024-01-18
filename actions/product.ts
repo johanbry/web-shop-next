@@ -1,7 +1,7 @@
 "use server";
 
+import { IAggregatedProduct } from "@/interfaces/interfaces";
 import { getProducts } from "@/lib/product";
-import { setTimeout } from "timers/promises";
 
 /**
  * Fetches products from the server.
@@ -20,6 +20,10 @@ export const fetchProducts = async (
   sortOrder?: string,
   searchTerm?: string
 ) => {
-  const products = getProducts(offset, limit, categoryId);
+  const products: IAggregatedProduct[] = await getProducts(
+    offset,
+    limit,
+    categoryId
+  );
   return products || [];
 };

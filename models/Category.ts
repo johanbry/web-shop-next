@@ -1,13 +1,13 @@
+import { ICategory } from "@/interfaces/interfaces";
 import { Schema, model, models } from "mongoose";
 
-const CategorySchema = new Schema({
+const CategorySchema = new Schema<ICategory>({
   name: {
     type: String,
     required: true,
   },
   description: {
     type: String,
-    required: true,
   },
   slug: {
     type: String,
@@ -24,4 +24,4 @@ const CategorySchema = new Schema({
   },
 });
 
-export default models.Category || model("Category", CategorySchema);
+export default models.Category || model<ICategory>("Category", CategorySchema);
