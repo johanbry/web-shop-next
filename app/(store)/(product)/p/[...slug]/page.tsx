@@ -95,27 +95,13 @@ export default async function ProductPage({ params }: Props) {
           option.color && option.color !== undefined && option.color.length > 3
       );
 
+    //Check if all style options have an image
     styleHasImages =
       styleOptions !== undefined &&
       styleOptions.every(
         (option) => option.images && option.images[0].filename.length > 5
       );
   }
-
-  /*   //Check if all style options have a color value
-  const hasColors = (styleOptions: any[]) => {
-    return styleOptions.every(
-      (option) =>
-        option.color && option.color !== undefined && option.color.length > 3
-    );
-  };
-
-  //Check if all style options have image
-  const hasImages = (styleOptions: IProductStyleOption[]) => {
-    return styleOptions.every(
-      (option) => option.images && option.images[0].filename.length > 5
-    );
-  }; */
 
   const carouselSlides = productImages?.map((image, index) => (
     <CarouselSlide key={index}>
@@ -225,7 +211,7 @@ export default async function ProductPage({ params }: Props) {
                 <Text component="span"> {currentStyle?.name}</Text>
               </Box>
               <Group>
-                {product.style?.options.map((option: any) => {
+                {product.style?.options.map((option: IProductStyleOption) => {
                   return (
                     <Box key={option.style_id}>
                       {styleHasImages && (
@@ -245,7 +231,9 @@ export default async function ProductPage({ params }: Props) {
                                 <Box w={100} p={5}>
                                   <AspectRatio ratio={1 / 1}>
                                     <Image
-                                      src={`${imagesPath}/${option.images[0].filename}`}
+                                      src={`${imagesPath}/${
+                                        option.images![0].filename
+                                      }`}
                                       fill
                                       alt={option.name}
                                       style={{
@@ -269,7 +257,7 @@ export default async function ProductPage({ params }: Props) {
                             href={`/p/${product.product_id}/${option.style_id}/${option.slug}`}
                           >
                             <ColorSwatch
-                              color={option.color}
+                              color={option.color!}
                               size={30}
                               style={
                                 option.style_id === styleId
