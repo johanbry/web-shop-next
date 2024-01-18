@@ -54,7 +54,11 @@ const ProductList = ({
 
     //Add initlimit to searchParams to keep track of how many products have been loaded, for correct behavior when navigating back
     params.set("initlimit", (productsOffset + limit).toString());
-    router.replace(pathname + "?" + params.toString());
+    const newUrl = pathname + "?" + params.toString();
+    window.history.replaceState({}, "", newUrl);
+
+    //Below code causes page reload. How to do shallow routing in next 14?
+    //router.replace(pathname + "?" + params.toString());
   };
 
   return (
