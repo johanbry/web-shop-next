@@ -18,6 +18,7 @@ import { IAggregatedProduct } from "@/interfaces/interfaces";
 
 type Props = {
   params: { slug: string[] };
+  searchParams?: { [key: string]: string | string[] | undefined };
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function CategoryPage({ params }: Props) {
+export default async function CategoryPage({ params, searchParams }: Props) {
   const categorySlug = params.slug[params.slug.length - 1]; // The slug of the current category
   const category = await getCategoryBySlug(categorySlug);
   const currentPath = params.slug.join("/"); // The path of the current category
@@ -39,7 +40,9 @@ export default async function CategoryPage({ params }: Props) {
   const total = await totalProducts(category._id.toString());
   const productsLimit = 1;
   const productsOffset = 0;
+  const initialProductsLimit = Number(searchParams?.initlimit) || productsLimit;
   const subCategories = await getSubCategories(category._id);
+  console.log("searchParams initlimit", searchParams?.initlimit);
 
   const breadcrumbItems = await Promise.all(
     params.slug.map(async (slug, index) => {
@@ -80,7 +83,7 @@ export default async function CategoryPage({ params }: Props) {
   let products: IAggregatedProduct[] = [];
   products = await getProducts(
     productsOffset,
-    productsLimit,
+    initialProductsLimit,
     category._id.toString()
   );
 
@@ -94,7 +97,7 @@ export default async function CategoryPage({ params }: Props) {
         {total > 0 ? (
           <ProductList
             initialProducts={products}
-            offset={productsOffset + productsLimit}
+            offset={productsOffset + initialProductsLimit}
             limit={productsLimit}
             total={total}
             categoryId={category._id.toString()}
