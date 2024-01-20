@@ -91,10 +91,11 @@ const CartProvider = ({ children }: PropsWithChildren) => {
 
     if (itemIndex === -1) {
       if (stock < quantity) {
-        console.log("Not enough stock");
         notifications.show({
-          title: "Default notification",
-          message: "Hey there, your code is awesome! 🤥",
+          color: "var(--mantine-color-error)",
+          withBorder: true,
+          title: "Produkten kunde inte läggas i varukorgen",
+          message: "Tyvärr finns produkten inte i lager!",
         });
         return;
       }
@@ -111,12 +112,11 @@ const CartProvider = ({ children }: PropsWithChildren) => {
       setCartItems([...cartItems, { ...cartItem, quantity }]);
     } else {
       if (stock < quantity + cartItems[itemIndex].quantity) {
-        console.log("Not enough stock");
         notifications.show({
           color: "var(--mantine-color-error)",
           withBorder: true,
-          title: "Lagerstatus",
-          message: "Tyvärr finns det inte fler produkter i lager! 🤥",
+          title: "Produkten kunde inte läggas i varukorgen",
+          message: "Tyvärr finns det inte fler i lager!",
         });
         return;
       }
