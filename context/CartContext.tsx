@@ -6,15 +6,13 @@ import {
   useCallback,
   useContext,
 } from "react";
+import { notifications } from "@mantine/notifications";
 
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import {
   IAggregatedProduct,
   ICartContext,
   ICartItem,
-  IMainProduct,
-  IProductCombination,
-  IProductStyleOption,
   ISelectedProductIds,
 } from "../interfaces/interfaces";
 import { fetchProduct, fetchProductByPId } from "@/actions/product";
@@ -50,14 +48,6 @@ const CartProvider = ({ children }: PropsWithChildren) => {
     );
 
     console.log("product", product);
-
-    /* const product: IMainProduct | null = await fetchProductByPId(
-      productIds.product_id
-    );*/
-    /*     let stock: number;
-    let price: number;
-    let image: string | undefined;
-    let options: string | undefined = undefined; */
 
     if (!product) return;
 
@@ -102,7 +92,10 @@ const CartProvider = ({ children }: PropsWithChildren) => {
     if (itemIndex === -1) {
       if (stock < quantity) {
         console.log("Not enough stock");
-        // Notification
+        notifications.show({
+          title: "Default notification",
+          message: "Hey there, your code is awesome! 🤥",
+        });
         return;
       }
       const cartItem: ICartItem = {
@@ -119,7 +112,12 @@ const CartProvider = ({ children }: PropsWithChildren) => {
     } else {
       if (stock < quantity + cartItems[itemIndex].quantity) {
         console.log("Not enough stock");
-        // Notification
+        notifications.show({
+          color: "var(--mantine-color-error)",
+          withBorder: true,
+          title: "Lagerstatus",
+          message: "Tyvärr finns det inte fler produkter i lager! 🤥",
+        });
         return;
       }
       const newCartItems = [...cartItems];
