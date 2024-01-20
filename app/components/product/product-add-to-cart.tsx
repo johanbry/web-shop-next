@@ -1,22 +1,25 @@
 "use client";
 
+import { useCartContext } from "@/context/CartContext";
 import {
-  IProduct,
+  IMainProduct,
   IProductCombination,
   IProductStyleOption,
   IProductVariant,
   IProductVariantOption,
+  ISelectedProductIds,
   IVariantSelectOption,
 } from "@/interfaces/interfaces";
 import { Button, Select, Text } from "@mantine/core";
 import { useState } from "react";
 
 type Props = {
-  product: IProduct;
+  product: IMainProduct;
   style?: IProductStyleOption | undefined | null;
 };
 
 const ProductAddToCart = ({ product, style }: Props) => {
+  const { addToCart } = useCartContext();
   const variant: IProductVariant | undefined = product.variant;
 
   const hasVariant =
@@ -100,10 +103,16 @@ const ProductAddToCart = ({ product, style }: Props) => {
     if (hasVariant && !selectedVariantValue) {
       setErrorNotSelected("Välj ett alternativ");
     } else {
-      const productId = product.product_id || null;
-      const styleId = style?.style_id || null;
-      const combinationId = selectedCombination?.combination_id || null;
-      alert(`Lägg till i varukorg: ${productId} ${styleId} ${combinationId}`);
+      const product_id = product.product_id;
+      const style_id = style?.style_id;
+      const combination_id = selectedCombination?.combination_id || undefined;
+
+      const productIds: ISelectedProductIds = {
+        product_id,
+        style_id,
+        combination_id,
+      };
+      addToCart(productIds, 1);
     }
   };
 

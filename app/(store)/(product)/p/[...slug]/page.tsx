@@ -1,6 +1,6 @@
 import ProductAddToCart from "@/app/components/product/product-add-to-cart";
 import {
-  IProduct,
+  IMainProduct,
   IProductImage,
   IProductStyleOption,
 } from "@/interfaces/interfaces";
@@ -39,7 +39,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const productId = params.slug[0]; // The product id of the product
-  const product: IProduct = await getProductById(productId);
+  const product: IMainProduct | null = await getProductById(productId);
 
   return {
     title: product?.name,
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const productId = params.slug[0]; //The product id of the product
-  const product: IProduct = await getProductById(productId);
+  const product: IMainProduct | null = await getProductById(productId);
 
   if (!product) notFound();
 
