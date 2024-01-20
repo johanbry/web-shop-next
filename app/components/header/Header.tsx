@@ -15,6 +15,7 @@ import { useDisclosure } from "@mantine/hooks";
 import SidebarMenu from "../navigation/sidebar-menu";
 import { ICategoryInTree } from "@/interfaces/interfaces";
 import MainMenu from "../navigation/main-menu";
+import { useCartContext } from "@/context/CartContext";
 
 type Props = {
   categories: ICategoryInTree[];
@@ -24,6 +25,8 @@ const Header = ({ categories }: Props) => {
   const [cartOpened, { toggle: toggleCart }] = useDisclosure(false);
   const [sidebarMenuOpened, { toggle: toggleSidebarMenu }] =
     useDisclosure(false);
+
+  const { cartItems } = useCartContext();
 
   return (
     <>
@@ -82,7 +85,7 @@ const Header = ({ categories }: Props) => {
         position="right"
         title="Kundvagn"
       >
-        Cart
+        <Text>{JSON.stringify(cartItems)}</Text>
       </Drawer>
       <Drawer
         opened={sidebarMenuOpened}
