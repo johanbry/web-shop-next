@@ -1,7 +1,11 @@
 "use server";
 
-import { IAggregatedProduct } from "@/interfaces/interfaces";
-import { getProducts } from "@/lib/product";
+import {
+  IAggregatedListProduct,
+  IAggregatedProduct,
+  IMainProduct,
+} from "@/interfaces/interfaces";
+import { getProduct, getProductById, getProducts } from "@/lib/product";
 
 /**
  * Fetches products from the server.
@@ -20,10 +24,38 @@ export const fetchProducts = async (
   sortOrder?: string,
   searchTerm?: string
 ) => {
-  const products: IAggregatedProduct[] = await getProducts(
+  const products: IAggregatedListProduct[] = await getProducts(
     offset,
     limit,
     categoryId
   );
   return products || [];
+};
+
+/**
+ * Fetches a product by its product ID.
+ * @param productId - The ID of the product to fetch.
+ * @returns A promise that resolves to the fetched product.
+ */
+export const fetchProductByPId = async (productId: string) => {
+  const product: IMainProduct | null = await getProductById(productId);
+  return product;
+};
+
+/**
+ * Fetches a product by its product ID, style ID and combination ID.
+ * @param productId - The ID of the product to fetch.
+ * @returns A promise that resolves to the fetched product.
+ */
+export const fetchProduct = async (
+  productId: string,
+  styleId?: string | undefined,
+  combinationId?: string | undefined
+) => {
+  const product: IAggregatedProduct = await getProduct(
+    productId,
+    styleId,
+    combinationId
+  );
+  return product;
 };
