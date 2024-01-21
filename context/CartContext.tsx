@@ -37,6 +37,23 @@ export const useCartContext = () => useContext(CartContext);
 const CartProvider = ({ children }: PropsWithChildren) => {
   const [cartItems, setCartItems] = useLocalStorage<ICartItem[]>("cart", []);
 
+  const showNotification = (
+    title: string,
+    message: string,
+    type?: string | undefined
+  ) => {
+    let color: string | undefined = undefined;
+    if (type === "success") color = "var(--mantine-color-success)";
+    if (type === "error") color = "var(--mantine-color-error)";
+
+    notifications.show({
+      color: "var(--mantine-color-error)",
+      withBorder: true,
+      title,
+      message,
+    });
+  };
+
   const addToCart = async (
     productIds: ISelectedProductIds,
     quantity: number
@@ -91,12 +108,11 @@ const CartProvider = ({ children }: PropsWithChildren) => {
 
     if (itemIndex === -1) {
       if (stock < quantity) {
-        notifications.show({
-          color: "var(--mantine-color-error)",
-          withBorder: true,
-          title: "Produkten kunde inte läggas i varukorgen",
-          message: "Tyvärr finns produkten inte i lager!",
-        });
+        showNotification(
+          "Kunde inte lägga i varukorgen",
+          "Tyvärr finns inte produkten i lager!",
+          "error"
+        );
         return;
       }
       const cartItem: ICartItem = {
@@ -112,33 +128,17 @@ const CartProvider = ({ children }: PropsWithChildren) => {
       setCartItems([...cartItems, { ...cartItem, quantity }]);
     } else {
       if (stock < quantity + cartItems[itemIndex].quantity) {
-        notifications.show({
-          color: "var(--mantine-color-error)",
-          withBorder: true,
-          title: "Produkten kunde inte läggas i varukorgen",
-          message: "Tyvärr finns det inte fler i lager!",
-        });
+        showNotification(
+          "Kunde inte lägga i varukorgen",
+          "Tyvärr har vi inte fler i lager!",
+          "error"
+        );
         return;
       }
       const newCartItems = [...cartItems];
       newCartItems[itemIndex].quantity += quantity;
       setCartItems(newCartItems);
     }
-
-    /*     const itemIndex = cartItems.findIndex(
-      (item: ICartItem) =>
-        item.product_id === cartItem.product_id &&
-        item.style_id === cartItem.style_id &&
-        item.combination_id === cartItem.combination_id
-    );
-
-    if (itemIndex === -1)
-      setCartItems([...cartItems, { ...cartItem, quantity }]);
-    else {
-      const newCartItems = [...cartItems];
-      newCartItems[itemIndex].quantity += quantity;
-      setCartItems(newCartItems);
-    } */
   };
 
   const subtractFromCart = (cartItem: any, quantity: number) => {
