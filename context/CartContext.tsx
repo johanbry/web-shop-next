@@ -16,9 +16,12 @@ import {
   ISelectedProductIds,
 } from "../interfaces/interfaces";
 import { fetchProduct, fetchProductByPId } from "@/actions/product";
+import { useDisclosure } from "@mantine/hooks";
 
 const defaultValues = {
   cartItems: [],
+  cartOpened: false,
+  toggleCart: () => {},
   addToCart: () => {},
   subtractFromCart: () => {},
   clearCart: () => {},
@@ -36,6 +39,7 @@ export const useCartContext = () => useContext(CartContext);
 
 const CartProvider = ({ children }: PropsWithChildren) => {
   const [cartItems, setCartItems] = useLocalStorage<ICartItem[]>("cart", []);
+  const [cartOpened, { toggle: toggleCart }] = useDisclosure(false);
 
   const showNotification = (
     title: string,
@@ -56,17 +60,34 @@ const CartProvider = ({ children }: PropsWithChildren) => {
 
   const addToCart = async (
     productIds: ISelectedProductIds,
-    quantity: number
+    quantity: number,
+    showDrawer: boolean = false
   ) => {
-    const product: IAggregatedProduct = await fetchProduct(
-      productIds.product_id,
-      productIds.style_id,
-      productIds.combination_id
-    );
+    let product: IAggregatedProduct;
+    try {
+      product = await fetchProduct(
+        productIds.product_id,
+        productIds.style_id,
+        productIds.combination_id
+      );
+    } catch (error) {
+      console.log(error);
+      showNotification(
+        "Kunde inte lägga i varukorgen",
+        "Ett fel uppstod, vänligen försök igen!",
+        "error"
+      );
+      return;
+    }
 
-    console.log("product", product);
-
-    if (!product) return;
+    if (!product) {
+      showNotification(
+        "Kunde inte lägga i varukorgen",
+        "Ett fel uppstod, vänligen försök igen!",
+        "error"
+      );
+      return;
+    }
 
     const stock = product.stock;
     const price = product.price;
@@ -107,6 +128,7 @@ const CartProvider = ({ children }: PropsWithChildren) => {
     );
 
     if (itemIndex === -1) {
+      //New cart item
       if (stock < quantity) {
         showNotification(
           "Kunde inte lägga i varukorgen",
@@ -127,9 +149,10 @@ const CartProvider = ({ children }: PropsWithChildren) => {
       };
       setCartItems([...cartItems, { ...cartItem, quantity }]);
     } else {
+      //Update existing cart item
       if (stock < quantity + cartItems[itemIndex].quantity) {
         showNotification(
-          "Kunde inte lägga i varukorgen",
+          "Kunde inte lägga lägga till fler",
           "Tyvärr har vi inte fler i lager!",
           "error"
         );
@@ -139,9 +162,10 @@ const CartProvider = ({ children }: PropsWithChildren) => {
       newCartItems[itemIndex].quantity += quantity;
       setCartItems(newCartItems);
     }
+    if (showDrawer) toggleCart();
   };
 
-  const subtractFromCart = (cartItem: any, quantity: number) => {
+  const subtractFromCart = (cartItem: ICartItem, quantity: number) => {
     const itemIndex = cartItems.findIndex(
       (item: ICartItem) =>
         item.product_id === cartItem.product_id &&
@@ -181,6 +205,8 @@ const CartProvider = ({ children }: PropsWithChildren) => {
     <CartContext.Provider
       value={{
         cartItems,
+        cartOpened,
+        toggleCart,
         addToCart,
         subtractFromCart,
         clearCart,
