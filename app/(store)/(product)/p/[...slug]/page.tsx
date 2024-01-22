@@ -7,6 +7,7 @@ import {
 import { getParentCategories } from "@/lib/category";
 import { getProductById } from "@/lib/product";
 import Product from "@/models/Product";
+import { PRODUCT_IMAGES_PATH } from "@/utils/constants";
 import { Carousel, CarouselSlide } from "@mantine/carousel";
 import {
   Anchor,
@@ -57,7 +58,7 @@ export default async function ProductPage({ params }: Props) {
   let productDescription: string | undefined = product.description;
   let productImages: IProductImage[] | undefined = product.images;
 
-  const imagesPath = "/products";
+  const imagesPath = PRODUCT_IMAGES_PATH;
 
   const isStyleProduct =
     product.style && product.style.type && product.style.options.length > 0
