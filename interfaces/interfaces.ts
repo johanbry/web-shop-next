@@ -175,8 +175,14 @@ export interface ICartItem {
  */
 export interface ICartContext {
   cartItems: ICartItem[];
-  addToCart: (arg0: ISelectedProductIds, arg1: number) => void;
-  subtractFromCart: (arg0: ISelectedProductIds, arg1: number) => void;
+  cartOpened: boolean;
+  toggleCart: () => void;
+  addToCart: (
+    arg0: ISelectedProductIds,
+    arg1: number,
+    arg2?: boolean | undefined
+  ) => void;
+  subtractFromCart: (arg0: ICartItem, arg1: number) => void;
   clearCart: () => void;
   qtyInCart: () => number;
   cartTotal: () => number;
