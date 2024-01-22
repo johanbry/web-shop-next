@@ -18,6 +18,7 @@ import {
   IProductImage,
   IProductStyleOption,
 } from "@/interfaces/interfaces";
+import { PRODUCT_IMAGES_PATH } from "@/utils/constants";
 
 type Props = {
   product: IAggregatedProduct;
@@ -26,7 +27,7 @@ type Props = {
 const ProductListCard = ({ product }: Props) => {
   let productHref = `p/${product.product_id}`;
   let productImage: IProductImage | undefined;
-  const imagesPath = "/products";
+  const imagesPath = PRODUCT_IMAGES_PATH;
 
   const isStyleProduct = product.style_product ? true : false; //Is the product a base product or a product created from a base product with style?
   let productPrice;

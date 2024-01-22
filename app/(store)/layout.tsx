@@ -13,7 +13,6 @@ export default async function StoreLayout({
   await connectToDB();
   const categories = await getAllCategories();
   const categoriesTree = convertCategoriesToTree(categories);
-  console.log("catslay", categoriesTree);
 
   return (
     <>

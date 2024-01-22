@@ -1,5 +1,11 @@
-import { IAggregatedProduct, IProduct } from "@/interfaces/interfaces";
+import {
+  IAggregatedListProduct,
+  IAggregatedProduct,
+  IMainProduct,
+  IProductType,
+} from "@/interfaces/interfaces";
 import Product from "@/models/Product";
+import connectToDB from "@/utils/db";
 import { ObjectId } from "mongodb";
 import { Document, PipelineStage, Schema } from "mongoose";
 
@@ -9,13 +15,75 @@ import { Document, PipelineStage, Schema } from "mongoose";
  * @returns A Promise that resolves to the product document, or null if not found.
  */
 export const getProductById = async (id: string) => {
-  let product: IProduct | null = null;
+  let product: IMainProduct | null = null;
 
   try {
+    await connectToDB();
     product = await Product.findOne({ product_id: id });
   } catch (error) {
     console.log((error as Error).message);
   }
+  return JSON.parse(JSON.stringify(product));
+};
+
+/**
+ * Retrieves a product item based on product id and if specified style and/or combination ids.
+ * @param productId - The ID of the product.
+ * @param styleId - Optional. The ID of the style.
+ * @param combinationId - Optional. The ID of the combination.
+ * @returns The aggregated product matching the provided parameters, or null if no product is found.
+ */
+export const getProduct = async (
+  productId: string,
+  styleId?: string | undefined,
+  combinationId?: string | undefined
+) => {
+  let products: IAggregatedProduct[] = [];
+  let productType: IProductType = "simple";
+  const pipeline: PipelineStage[] = [];
+
+  pipeline.push({ $match: { product_id: productId } });
+
+  if (styleId) {
+    pipeline.push({ $addFields: { style_options: "$style" } });
+    pipeline.push({
+      $unwind: { path: "$style.options" },
+    });
+    pipeline.push({ $addFields: { style_product: "$style.options" } });
+    pipeline.push({ $match: { "style_product.style_id": styleId } });
+    pipeline.push({ $set: { stock: "$style_product.stock" } });
+    pipeline.push({ $set: { price: "$style_product.price" } });
+    pipeline.push({ $unset: ["style"] });
+    productType = "style";
+  }
+
+  if (combinationId) {
+    pipeline.push({
+      $unwind: { path: "$combinations" },
+    });
+    pipeline.push({ $addFields: { combination_product: "$combinations" } });
+    pipeline.push({
+      $match: { "combination_product.combination_id": combinationId },
+    });
+    pipeline.push({ $set: { stock: "$combination_product.stock" } });
+    pipeline.push({ $set: { price: "$combination_product.price" } });
+    pipeline.push({ $unset: ["combinations"] });
+    if (productType == "style") productType = "style-combination";
+    else productType = "combination";
+  }
+
+  pipeline.push({ $addFields: { product_type: productType } });
+
+  try {
+    await connectToDB();
+    products = await Product.aggregate(pipeline);
+  } catch (error) {
+    console.log((error as Error).message);
+  }
+
+  let product: IAggregatedProduct | null = null;
+  product = products[0];
+
   return JSON.parse(JSON.stringify(product));
 };
 
@@ -40,7 +108,7 @@ export const getProducts = async (
   sortOrder?: string,
   searchTerm?: string
 ) => {
-  let products: IAggregatedProduct[] = [];
+  let products: IAggregatedListProduct[] = [];
   const pipeline: PipelineStage[] = [];
 
   if (categoryId) {
@@ -65,12 +133,13 @@ export const getProducts = async (
   pipeline.push({ $limit: limit });
 
   try {
+    await connectToDB();
     products = await Product.aggregate(pipeline);
   } catch (error) {
     console.log((error as Error).message);
   }
 
-  return JSON.parse(JSON.stringify(products)) as IAggregatedProduct[];
+  return JSON.parse(JSON.stringify(products)) as IAggregatedListProduct[];
 };
 
 /**
@@ -99,7 +168,13 @@ export const totalProducts = async (categoryId?: string) => {
       },
     });
   }
-  const doc = await Product.aggregate(pipeline);
-  if (doc.length > 0) total = doc[0].total;
+  try {
+    await connectToDB();
+    const doc = await Product.aggregate(pipeline);
+    if (doc.length > 0) total = doc[0].total;
+  } catch (error) {
+    console.log((error as Error).message);
+  }
+
   return total;
 };
