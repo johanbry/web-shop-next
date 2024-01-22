@@ -9,24 +9,23 @@ import {
   Group,
   Text,
 } from "@mantine/core";
-import { IconShoppingCart, IconUser, IconSearch } from "@tabler/icons-react";
+import { IconUser } from "@tabler/icons-react";
 import Search from "../search/search";
 import { useDisclosure } from "@mantine/hooks";
 import SidebarMenu from "../navigation/sidebar-menu";
 import { ICategoryInTree } from "@/interfaces/interfaces";
 import MainMenu from "../navigation/main-menu";
 import { useCartContext } from "@/context/CartContext";
+import CartDrawer from "../cart/cart-drawer";
+import CartHeaderIcon from "../cart/cart-header-icon";
 
 type Props = {
   categories: ICategoryInTree[];
 };
 
 const Header = ({ categories }: Props) => {
-  const [cartOpened, { toggle: toggleCart }] = useDisclosure(false);
   const [sidebarMenuOpened, { toggle: toggleSidebarMenu }] =
     useDisclosure(false);
-
-  const { cartItems } = useCartContext();
 
   return (
     <>
@@ -49,19 +48,12 @@ const Header = ({ categories }: Props) => {
             <Box visibleFrom="sm" w="400">
               <Search />
             </Box>
-            <Box>
+            <Group align="baseline">
               <ActionIcon variant="transparent" size="lg" color="black">
                 <IconUser style={{ width: "100%", height: "100%" }} />
               </ActionIcon>
-              <ActionIcon
-                variant="transparent"
-                size="lg"
-                color="black"
-                onClick={toggleCart}
-              >
-                <IconShoppingCart style={{ width: "100%", height: "100%" }} />
-              </ActionIcon>
-            </Box>
+              <CartHeaderIcon />
+            </Group>
           </Group>
         </Container>
       </Container>
@@ -79,14 +71,7 @@ const Header = ({ categories }: Props) => {
           <Search />
         </Container>
       </Container>
-      <Drawer
-        opened={cartOpened}
-        onClose={toggleCart}
-        position="right"
-        title="Kundvagn"
-      >
-        <Text>{JSON.stringify(cartItems)}</Text>
-      </Drawer>
+      <CartDrawer />
       <Drawer
         opened={sidebarMenuOpened}
         onClose={toggleSidebarMenu}
