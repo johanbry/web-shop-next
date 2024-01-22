@@ -112,7 +112,7 @@ const ProductAddToCart = ({ product, style }: Props) => {
         style_id,
         combination_id,
       };
-      addToCart(productIds, 1);
+      addToCart(productIds, 1, true);
     }
   };
 
