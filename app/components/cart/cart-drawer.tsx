@@ -1,9 +1,6 @@
 import { useCartContext } from "@/context/CartContext";
-import { ICartItem } from "@/interfaces/interfaces";
-import { PRODUCT_IMAGES_PATH } from "@/utils/constants";
+
 import {
-  ActionIcon,
-  AspectRatio,
   Box,
   Button,
   Divider,
@@ -11,33 +8,15 @@ import {
   Group,
   Stack,
   Text,
-  Title,
 } from "@mantine/core";
-import {
-  IconCircleMinus,
-  IconCirclePlus,
-  IconMoodSmile,
-  IconPhoto,
-  IconTrashX,
-} from "@tabler/icons-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Fragment } from "react";
 import CartItemsList from "./cart-items-list";
 
 type Props = {};
 
 const CartDrawer = (props: Props) => {
-  const {
-    cartItems,
-    cartTotal,
-    cartOpened,
-    toggleCart,
-    addToCart,
-    subtractFromCart,
-  } = useCartContext();
+  const { cartItems, cartTotal, cartOpened, toggleCart } = useCartContext();
   const router = useRouter();
-  const imagesPath = PRODUCT_IMAGES_PATH;
 
   const handleCheckoutClick = () => {
     toggleCart();
@@ -50,7 +29,7 @@ const CartDrawer = (props: Props) => {
       position="right"
       title="Din varukorg"
     >
-      <Group>
+      <Stack>
         <Divider w="100%" />
         {!cartItems.length && (
           <>
@@ -79,7 +58,7 @@ const CartDrawer = (props: Props) => {
         <Button variant="outline" size="xl" fullWidth onClick={toggleCart}>
           Fortsätt handla
         </Button>
-      </Group>
+      </Stack>
     </Drawer>
   );
 };
