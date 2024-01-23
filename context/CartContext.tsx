@@ -15,7 +15,7 @@ import {
   ICartItem,
   ISelectedProductIds,
 } from "../interfaces/interfaces";
-import { fetchProduct, fetchProductByPId } from "@/actions/product";
+import { fetchProduct } from "@/actions/product";
 import { useDisclosure } from "@mantine/hooks";
 
 const defaultValues = {
@@ -29,6 +29,9 @@ const defaultValues = {
     return 0;
   },
   cartTotal: () => {
+    return 0;
+  },
+  cartWeight: () => {
     return 0;
   },
 };
@@ -144,6 +147,7 @@ const CartProvider = ({ children }: PropsWithChildren) => {
         name: product.name,
         options: options ? options : undefined,
         price: price,
+        weight: product.weight || 0,
         quantity: quantity,
         image: image,
       };
@@ -201,6 +205,13 @@ const CartProvider = ({ children }: PropsWithChildren) => {
     );
   };
 
+  const cartWeight = () => {
+    return cartItems.reduce(
+      (sum: number, item: ICartItem) => sum + item.quantity * item.weight,
+      0
+    );
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -212,6 +223,7 @@ const CartProvider = ({ children }: PropsWithChildren) => {
         clearCart,
         qtyInCart,
         cartTotal,
+        cartWeight,
       }}
     >
       {children}
