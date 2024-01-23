@@ -34,6 +34,7 @@ interface IBaseProduct {
   slug: string;
   description?: string;
   price: number;
+  weight?: number;
   stock: number;
   categories: ObjectId[];
   images?: IProductImage[];
@@ -167,6 +168,7 @@ export interface ICartItem {
   options?: string | undefined;
   image?: string | undefined;
   price: number;
+  weight: number;
   quantity: number;
 }
 
@@ -186,4 +188,17 @@ export interface ICartContext {
   clearCart: () => void;
   qtyInCart: () => number;
   cartTotal: () => number;
+  cartWeight: () => number;
+}
+
+export interface IShippingMethod {
+  _id: ObjectId;
+  name: string;
+  description?: string;
+  price: number;
+  free_amount?: number;
+  min_amount?: number;
+  max_amount?: number;
+  min_weight?: number;
+  max_weight?: number;
 }
