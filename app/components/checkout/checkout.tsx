@@ -13,20 +13,30 @@ import {
   Divider,
   Button,
   Center,
+  Alert,
 } from "@mantine/core";
 import CartItemsList from "../cart/cart-items-list";
 import { useCartContext } from "@/context/CartContext";
 import { useState, useEffect } from "react";
 import { IShippingMethod } from "@/interfaces/interfaces";
+import { validateCartStock } from "@/actions/product";
+import { showNotification } from "@/utils/showNotifications";
+import { IconInfoCircle } from "@tabler/icons-react";
+import { set } from "mongoose";
 
 type Props = {
   shippingMethods: IShippingMethod[];
 };
 
 const Checkout = ({ shippingMethods }: Props) => {
-  const { cartItems, cartTotal, cartWeight } = useCartContext();
+  const { cartItems, cartTotal, cartWeight, subtractFromCart } =
+    useCartContext();
   const [isClient, setIsClient] = useState(false);
   const [selectedShippingIndex, setSelectedShippingIndex] = useState(0);
+  const [validateStockErrorMessage, setValidateStockErrorMessage] = useState<
+    string | null
+  >(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const cartTotAmount = cartTotal();
   const cartTotWeight = cartWeight();
@@ -57,8 +67,26 @@ const Checkout = ({ shippingMethods }: Props) => {
     filteredShippingMethods[selectedShippingIndex].price || 0;
   const totalToPay = cartTotAmount + shippingCost;
 
-  const handleCheckoutClick = () => {
-    console.log("checkout");
+  const handleCheckoutClick = async () => {
+    setIsLoading(true);
+    const validateResponse = await validateCartStock(cartItems);
+    if (!validateResponse.valid) {
+      const invalidItems = validateResponse.invalidItems;
+      invalidItems?.forEach((item) => {
+        subtractFromCart(item, item.stockDiff);
+      });
+      setValidateStockErrorMessage(
+        `Tyvärr tvingades vi göra justeringar i din varukorg då vi har för lågt lagersaldo på dessa varor: ${invalidItems
+          ?.map((item) => item.name)
+          .join(
+            ", "
+          )}. Vänligen kontrollera din varukorg innan du fortsätter till betalning.`
+      );
+      setIsLoading(false);
+    } else {
+      //TODO: Checkout
+      setIsLoading(false);
+    }
   };
 
   //Avoid hydration error
@@ -130,15 +158,41 @@ const Checkout = ({ shippingMethods }: Props) => {
               </RadioGroup>
             </Paper>
             {filteredShippingMethods && filteredShippingMethods.length > 0 && (
-              <Center>
-                <Button
-                  size="xl"
-                  onClick={handleCheckoutClick}
-                  color="var(--mantine-color-green-6)"
-                >
-                  Fortsätt till betalning
-                </Button>
-              </Center>
+              <>
+                {validateStockErrorMessage && (
+                  <Center mb="lg">
+                    <Alert
+                      onClose={() => setValidateStockErrorMessage(null)}
+                      variant="light"
+                      color="red"
+                      withCloseButton
+                      title="Problem med lagersaldo"
+                      icon={<IconInfoCircle />}
+                    >
+                      {validateStockErrorMessage}
+                    </Alert>
+                  </Center>
+                )}
+                <Center>
+                  <Button
+                    w={300}
+                    size="xl"
+                    onClick={handleCheckoutClick}
+                    color="var(--mantine-color-green-6)"
+                    aria-disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <Loader
+                        color="var(--mantine-color-white)"
+                        size="sm"
+                        ml="sm"
+                      />
+                    ) : (
+                      "Fortsätt till betalning"
+                    )}
+                  </Button>
+                </Center>
+              </>
             )}
           </>
         )

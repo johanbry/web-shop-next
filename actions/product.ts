@@ -3,6 +3,7 @@
 import {
   IAggregatedListProduct,
   IAggregatedProduct,
+  ICartItem,
   IMainProduct,
 } from "@/interfaces/interfaces";
 import { getProduct, getProductById, getProducts } from "@/lib/product";
@@ -58,4 +59,29 @@ export const fetchProduct = async (
     combinationId
   );
   return product;
+};
+
+export const validateCartStock = async (cartItems: ICartItem[]) => {
+  let invalidItems: any[] = [];
+  try {
+    for (let item of cartItems) {
+      const product = await getProduct(
+        item.product_id,
+        item.style_id,
+        item.combination_id
+      );
+      if (product) {
+        if (product.stock < item.quantity) {
+          const stock = product.stock < 0 ? 0 : product.stock;
+          invalidItems.push({ ...item, stockDiff: item.quantity - stock });
+        }
+      }
+    }
+  } catch (error) {
+    return { valid: true }; //If the check couldn't be performed we let the order through (or should we not?)
+  }
+  if (invalidItems.length === 0) {
+    return { valid: true };
+  }
+  return { valid: false, invalidItems };
 };
