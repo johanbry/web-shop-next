@@ -6,7 +6,6 @@ import {
   useCallback,
   useContext,
 } from "react";
-import { notifications } from "@mantine/notifications";
 
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import {
@@ -15,8 +14,10 @@ import {
   ICartItem,
   ISelectedProductIds,
 } from "../interfaces/interfaces";
-import { fetchProduct, fetchProductByPId } from "@/actions/product";
+import { fetchProduct } from "@/actions";
+
 import { useDisclosure } from "@mantine/hooks";
+import { showNotification } from "@/utils/showNotifications";
 
 const defaultValues = {
   cartItems: [],
@@ -31,6 +32,9 @@ const defaultValues = {
   cartTotal: () => {
     return 0;
   },
+  cartWeight: () => {
+    return 0;
+  },
 };
 
 export const CartContext = createContext<ICartContext>(defaultValues);
@@ -40,23 +44,6 @@ export const useCartContext = () => useContext(CartContext);
 const CartProvider = ({ children }: PropsWithChildren) => {
   const [cartItems, setCartItems] = useLocalStorage<ICartItem[]>("cart", []);
   const [cartOpened, { toggle: toggleCart }] = useDisclosure(false);
-
-  const showNotification = (
-    title: string,
-    message: string,
-    type?: string | undefined
-  ) => {
-    let color: string | undefined = undefined;
-    if (type === "success") color = "var(--mantine-color-success)";
-    if (type === "error") color = "var(--mantine-color-error)";
-
-    notifications.show({
-      color: "var(--mantine-color-error)",
-      withBorder: true,
-      title,
-      message,
-    });
-  };
 
   const addToCart = async (
     productIds: ISelectedProductIds,
@@ -144,6 +131,7 @@ const CartProvider = ({ children }: PropsWithChildren) => {
         name: product.name,
         options: options ? options : undefined,
         price: price,
+        weight: product.weight || 0,
         quantity: quantity,
         image: image,
       };
@@ -201,6 +189,13 @@ const CartProvider = ({ children }: PropsWithChildren) => {
     );
   };
 
+  const cartWeight = () => {
+    return cartItems.reduce(
+      (sum: number, item: ICartItem) => sum + item.quantity * item.weight,
+      0
+    );
+  };
+
   return (
     <CartContext.Provider
       value={{
@@ -212,6 +207,7 @@ const CartProvider = ({ children }: PropsWithChildren) => {
         clearCart,
         qtyInCart,
         cartTotal,
+        cartWeight,
       }}
     >
       {children}

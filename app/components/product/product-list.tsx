@@ -3,7 +3,7 @@
 import { useState } from "react";
 import ProductListCard from "./product-list-card";
 import { Box, Button, Center, Grid, GridCol, Stack, Text } from "@mantine/core";
-import { fetchProducts } from "@/actions/product";
+import { fetchProducts } from "@/actions";
 import { IAggregatedProduct } from "@/interfaces/interfaces";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 

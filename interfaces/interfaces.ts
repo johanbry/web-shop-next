@@ -34,6 +34,7 @@ interface IBaseProduct {
   slug: string;
   description?: string;
   price: number;
+  weight?: number;
   stock: number;
   categories: ObjectId[];
   images?: IProductImage[];
@@ -167,6 +168,7 @@ export interface ICartItem {
   options?: string | undefined;
   image?: string | undefined;
   price: number;
+  weight: number;
   quantity: number;
 }
 
@@ -186,4 +188,74 @@ export interface ICartContext {
   clearCart: () => void;
   qtyInCart: () => number;
   cartTotal: () => number;
+  cartWeight: () => number;
 }
+
+/**
+ * Represents a shipping method.
+ */
+export interface IShippingMethod {
+  _id: ObjectId;
+  name: string;
+  description?: string;
+  price: number;
+  free_amount?: number;
+  min_amount?: number;
+  max_amount?: number;
+  min_weight?: number;
+  max_weight?: number;
+}
+
+/**
+ * Represents a shipping method for an order.
+ */
+export interface IShippingMethodOrder {
+  name: string;
+  price: number;
+}
+
+/**
+ * Represents a order item.
+ */
+export interface IOrderItem extends ICartItem {}
+
+/**
+ * Represents a order.
+ */
+export interface IOrder {
+  order_id: string;
+  createdAt: string;
+  updatedAt: string;
+  items: IOrderItem[];
+  shipping_method: IShippingMethod;
+  user_id: ObjectId | null;
+  customer_email?: string;
+  delivery_address?: IDeliveryAddress;
+  status?: string;
+  payment_reference?: string;
+  payment_status?: string;
+}
+
+/**
+ * Represents a delivery address.
+ */
+export interface IDeliveryAddress {
+  name: string;
+  street: string;
+  street2?: string;
+  zipcode: string;
+  city: string;
+  country: string;
+}
+
+/**
+ * Represents a user in the system.
+ */
+export interface IUser {
+  _id: ObjectId;
+  name: string;
+  email: string;
+  role: IUserRole;
+}
+
+export type IUserRole = "customer" | "admin";
