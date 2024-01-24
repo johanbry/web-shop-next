@@ -191,6 +191,9 @@ export interface ICartContext {
   cartWeight: () => number;
 }
 
+/**
+ * Represents a shipping method.
+ */
 export interface IShippingMethod {
   _id: ObjectId;
   name: string;
@@ -202,3 +205,57 @@ export interface IShippingMethod {
   min_weight?: number;
   max_weight?: number;
 }
+
+/**
+ * Represents a shipping method for an order.
+ */
+export interface IShippingMethodOrder {
+  name: string;
+  price: number;
+}
+
+/**
+ * Represents a order item.
+ */
+export interface IOrderItem extends ICartItem {}
+
+/**
+ * Represents a order.
+ */
+export interface IOrder {
+  order_id: string;
+  createdAt: string;
+  updatedAt: string;
+  items: IOrderItem[];
+  shipping_method: IShippingMethod;
+  user_id: ObjectId | null;
+  customer_email?: string;
+  delivery_address?: IDeliveryAddress;
+  status?: string;
+  payment_reference?: string;
+  payment_status?: string;
+}
+
+/**
+ * Represents a delivery address.
+ */
+export interface IDeliveryAddress {
+  name: string;
+  street: string;
+  street2?: string;
+  zipcode: string;
+  city: string;
+  country: string;
+}
+
+/**
+ * Represents a user in the system.
+ */
+export interface IUser {
+  _id: ObjectId;
+  name: string;
+  email: string;
+  role: IUserRole;
+}
+
+export type IUserRole = "customer" | "admin";
