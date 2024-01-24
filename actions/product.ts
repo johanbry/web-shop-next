@@ -61,6 +61,11 @@ export const fetchProduct = async (
   return product;
 };
 
+/**
+ * Validates the stock of items in the cart.
+ * @param cartItems - An array of cart items.
+ * @returns An object indicating whether the cart is valid and an array of invalid items if applicable.
+ */
 export const validateCartStock = async (cartItems: ICartItem[]) => {
   let invalidItems: any[] = [];
   try {
