@@ -6,7 +6,6 @@ import {
   useCallback,
   useContext,
 } from "react";
-import { notifications } from "@mantine/notifications";
 
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import {
@@ -16,7 +15,9 @@ import {
   ISelectedProductIds,
 } from "../interfaces/interfaces";
 import { fetchProduct } from "@/actions/product";
+
 import { useDisclosure } from "@mantine/hooks";
+import { showNotification } from "@/utils/showNotifications";
 
 const defaultValues = {
   cartItems: [],
@@ -43,23 +44,6 @@ export const useCartContext = () => useContext(CartContext);
 const CartProvider = ({ children }: PropsWithChildren) => {
   const [cartItems, setCartItems] = useLocalStorage<ICartItem[]>("cart", []);
   const [cartOpened, { toggle: toggleCart }] = useDisclosure(false);
-
-  const showNotification = (
-    title: string,
-    message: string,
-    type?: string | undefined
-  ) => {
-    let color: string | undefined = undefined;
-    if (type === "success") color = "var(--mantine-color-success)";
-    if (type === "error") color = "var(--mantine-color-error)";
-
-    notifications.show({
-      color: "var(--mantine-color-error)",
-      withBorder: true,
-      title,
-      message,
-    });
-  };
 
   const addToCart = async (
     productIds: ISelectedProductIds,
