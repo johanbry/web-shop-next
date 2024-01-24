@@ -14,7 +14,7 @@ import {
   ICartItem,
   ISelectedProductIds,
 } from "../interfaces/interfaces";
-import { fetchProduct } from "@/actions/product";
+import { fetchProduct } from "@/actions";
 
 import { useDisclosure } from "@mantine/hooks";
 import { showNotification } from "@/utils/showNotifications";

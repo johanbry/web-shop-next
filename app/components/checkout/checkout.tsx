@@ -19,7 +19,7 @@ import CartItemsList from "../cart/cart-items-list";
 import { useCartContext } from "@/context/CartContext";
 import { useState, useEffect } from "react";
 import { IShippingMethod } from "@/interfaces/interfaces";
-import { validateCartStock } from "@/actions/product";
+import { createAndPayOrder, validateCartStock } from "@/actions";
 import { showNotification } from "@/utils/showNotifications";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { set } from "mongoose";
@@ -84,7 +84,10 @@ const Checkout = ({ shippingMethods }: Props) => {
       );
       setIsLoading(false);
     } else {
-      //TODO: Checkout
+      await createAndPayOrder(
+        cartItems,
+        filteredShippingMethods[selectedShippingIndex]
+      );
       setIsLoading(false);
     }
   };
