@@ -14,7 +14,7 @@ import { Fragment } from "react";
 import { getProducts, totalProducts } from "@/lib/product";
 import ProductList from "@/app/components/product/product-list";
 import { notFound } from "next/navigation";
-import { IAggregatedProduct } from "@/interfaces/interfaces";
+import { IAggregatedListProduct } from "@/interfaces/interfaces";
 
 type Props = {
   params: { slug: string[] };
@@ -80,7 +80,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     </Button>
   ));
 
-  let products: IAggregatedProduct[] = [];
+  let products: IAggregatedListProduct[] = [];
   products = await getProducts(
     productsOffset,
     initialProductsLimit,
