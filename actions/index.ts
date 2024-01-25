@@ -99,6 +99,13 @@ export const validateCartStock = async (cartItems: ICartItem[]) => {
   return { valid: false, invalidItems };
 };
 
+/**
+ * Creates order (draft), initializes and redirect to Stripe payment.
+ *
+ * @param cartItems - The items in the cart.
+ * @param shippingMethod - The selected shipping method.
+ * @returns An object with the created order information or an error message.
+ */
 export const createAndPayOrder = async (
   cartItems: ICartItem[],
   shippingMethod: IShippingMethod
