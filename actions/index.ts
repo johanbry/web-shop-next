@@ -7,9 +7,14 @@ import {
   IMainProduct,
   IOrderItem,
   IShippingMethod,
+  IShippingMethodOrder,
 } from "@/interfaces/interfaces";
 import { getProduct, getProductById, getProducts } from "@/lib/product";
 import Order from "@/models/Order";
+import initStripe from "@/utils/stripe";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import Stripe from "stripe";
 
 /**
  * Fetches products from the server.
@@ -98,10 +103,20 @@ export const createAndPayOrder = async (
   cartItems: ICartItem[],
   shippingMethod: IShippingMethod
 ) => {
+  let orderItems: IOrderItem[] = [];
+  let orderShippingMethod: IShippingMethodOrder = {
+    name: shippingMethod.name,
+    price: shippingMethod.price,
+  };
+  const orderStatus = "draft";
+  const orderPaymentStatus = "unpaid";
+
+  const host = headers().get("origin");
+  let stripeSession: Stripe.Response<Stripe.Checkout.Session> | undefined;
+
+  //Get product items from db to ensure we have the latest info and for security reasons and create order items
   try {
-    //Get product items from db to ensure we have the latest info and for security reasons
-    // Create order items
-    const orderItems: IOrderItem[] = await Promise.all(
+    orderItems = await Promise.all(
       cartItems.map(async (cartItem) => {
         const product: IAggregatedProduct = await getProduct(
           cartItem.product_id,
@@ -154,24 +169,72 @@ export const createAndPayOrder = async (
         return orderItem;
       })
     );
-    const orderShippingMethod = {
-      name: shippingMethod.name,
-      price: shippingMethod.price,
-    };
+  } catch (error) {
+    console.log(error);
+    return { error: "Order kunde inte skapas." };
+  }
 
-    const orderStatus = "draft";
-    const orderPaymentStatus = "unpaid";
-    console.log("orderShippingMethod: ", orderShippingMethod);
+  //Create stripe checkout session
+  try {
+    const stripe = initStripe();
+    stripeSession = await stripe?.checkout.sessions.create({
+      line_items: orderItems.map((item: IOrderItem) => {
+        return {
+          price_data: {
+            currency: "sek",
+            product_data: {
+              name: item.name,
+            },
+            unit_amount: item.price * 100,
+          },
+          quantity: item.quantity,
+        };
+      }),
+      mode: "payment",
+      shipping_address_collection: {
+        allowed_countries: ["SE"],
+      },
+      phone_number_collection: {
+        enabled: true,
+      },
+      shipping_options: [
+        {
+          shipping_rate_data: {
+            display_name: orderShippingMethod.name,
+            type: "fixed_amount",
+            fixed_amount: {
+              amount: orderShippingMethod.price * 100,
+              currency: "sek",
+            },
+          },
+        },
+      ],
+      expires_at: Math.floor(Date.now() / 1000) + 3600 / 2, //Expire session in 30 minutes to return back stock
+      success_url: `${host}/orderbekraftelse?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${host}/kassa`,
+    });
 
-    console.log("orderItems: ", orderItems);
+    if (!stripeSession) {
+      throw new Error();
+    }
+  } catch (err) {
+    console.error(err);
+    return { error: "Någonting gick fel med betalningen." };
+  }
 
+  try {
     await Order.create({
       items: orderItems,
       shipping_method: orderShippingMethod,
       status: orderStatus,
       payment_status: orderPaymentStatus,
+      payment_reference: stripeSession.id,
     });
   } catch (error) {
     console.log(error);
+    return { error: "Order kunde inte skapas." };
   }
+
+  //Redirect to stripe hosted checkout page
+  redirect(stripeSession.url!);
 };
