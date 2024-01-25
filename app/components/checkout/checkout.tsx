@@ -84,10 +84,16 @@ const Checkout = ({ shippingMethods }: Props) => {
       );
       setIsLoading(false);
     } else {
-      await createAndPayOrder(
+      const createResponse = await createAndPayOrder(
         cartItems,
         filteredShippingMethods[selectedShippingIndex]
       );
+      if (createResponse.error)
+        showNotification(
+          "Betalning mysslyckades",
+          createResponse.error,
+          "error"
+        );
       setIsLoading(false);
     }
   };
