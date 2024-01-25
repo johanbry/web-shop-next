@@ -14,6 +14,7 @@ import Link from "next/link";
 import NextImage from "next/image";
 import { IconPhoto } from "@tabler/icons-react";
 import {
+  IAggregatedListProduct,
   IAggregatedProduct,
   IProductImage,
   IProductStyleOption,
@@ -21,7 +22,7 @@ import {
 import { PRODUCT_IMAGES_PATH } from "@/utils/constants";
 
 type Props = {
-  product: IAggregatedProduct;
+  product: IAggregatedListProduct;
 };
 
 const ProductListCard = ({ product }: Props) => {
