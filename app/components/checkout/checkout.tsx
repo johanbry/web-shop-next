@@ -22,13 +22,14 @@ import { IShippingMethod } from "@/interfaces/interfaces";
 import { createAndPayOrder, validateCartStock } from "@/actions";
 import { showNotification } from "@/utils/showNotifications";
 import { IconInfoCircle } from "@tabler/icons-react";
-import { set } from "mongoose";
+import { useRouter } from "next/navigation";
 
 type Props = {
   shippingMethods: IShippingMethod[];
 };
 
 const Checkout = ({ shippingMethods }: Props) => {
+  const router = useRouter();
   const { cartItems, cartTotal, cartWeight, subtractFromCart } =
     useCartContext();
   const [isClient, setIsClient] = useState(false);
@@ -88,12 +89,16 @@ const Checkout = ({ shippingMethods }: Props) => {
         cartItems,
         filteredShippingMethods[selectedShippingIndex]
       );
-      if (createResponse.error)
+      if (createResponse.error) {
         showNotification(
           "Betalning mysslyckades",
           createResponse.error,
           "error"
         );
+      }
+      if (createResponse.success && createResponse.stripe_url) {
+        router.push(createResponse.stripe_url);
+      }
       setIsLoading(false);
     }
   };
