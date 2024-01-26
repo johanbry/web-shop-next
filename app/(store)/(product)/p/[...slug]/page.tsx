@@ -83,7 +83,7 @@ export default async function ProductPage({ params }: Props) {
     //If a style product has no matching style id in the url, redirect to the first style
     if (!currentStyle)
       permanentRedirect(
-        `/p/${productId}/${product.style?.options[0].style_id}/${product.style?.options[0].slug}`
+        `/p/${productId}/${product.style?.options[0].style_id}/${product.slug}-${product.style?.options[0].slug}`
       );
 
     productImages = [...(currentStyle?.images || []), ...(productImages || [])]; //Combine the base product images with the style product images
@@ -213,6 +213,7 @@ export default async function ProductPage({ params }: Props) {
               </Box>
               <Group>
                 {product.style?.options.map((option: IProductStyleOption) => {
+                  const styleHref = `/p/${product.product_id}/${option.style_id}/${product.slug}-${option.slug}`;
                   return (
                     <Box key={option.style_id}>
                       {styleHasImages && (
@@ -226,9 +227,7 @@ export default async function ProductPage({ params }: Props) {
                             }
                           >
                             <Tooltip label={option.name} withArrow>
-                              <Link
-                                href={`/p/${product.product_id}/${option.style_id}/${option.slug}`}
-                              >
+                              <Link href={styleHref}>
                                 <Box w={100} p={5}>
                                   <AspectRatio ratio={1 / 1}>
                                     <Image
@@ -254,9 +253,7 @@ export default async function ProductPage({ params }: Props) {
                       )}
                       {!styleHasImages && styleHasColors && (
                         <Tooltip label={option.name} withArrow>
-                          <Link
-                            href={`/p/${product.product_id}/${option.style_id}/${option.slug}`}
-                          >
+                          <Link href={styleHref}>
                             <ColorSwatch
                               color={option.color!}
                               size={30}
@@ -274,9 +271,7 @@ export default async function ProductPage({ params }: Props) {
                       )}
 
                       {!styleHasImages && !styleHasColors && (
-                        <Link
-                          href={`/p/${product.product_id}/${option.style_id}/${option.slug}`}
-                        >
+                        <Link href={styleHref}>
                           <Button
                             variant={
                               option.style_id === styleId ? "filled" : "outline"
