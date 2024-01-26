@@ -3,11 +3,13 @@ import {
   IAggregatedProduct,
   IMainProduct,
   IProductType,
+  ISelectedProductIds,
 } from "@/interfaces/interfaces";
 import Product from "@/models/Product";
 import connectToDB from "@/utils/db";
 import { ObjectId } from "mongodb";
-import { Document, PipelineStage, Schema } from "mongoose";
+import { Document, HydratedDocument, PipelineStage, Schema } from "mongoose";
+import { revalidatePath } from "next/cache";
 
 /**
  * Retrieves a product by its ID.
@@ -177,4 +179,49 @@ export const totalProducts = async (categoryId?: string) => {
   }
 
   return total;
+};
+
+/**
+ * Updates the stock of a product based on the provided ids for product, style and or combination, and quantity. Revalidates the affected product page
+ * @param productIds - The productIds.
+ * @param quantity - The quantity to update the stock by. Provide a negative quantity to decrease the stock.
+ */
+export const updateStock = async (
+  productIds: ISelectedProductIds,
+  quantity: number
+) => {
+  let path: string = "";
+  try {
+    const product = (await Product.findOne({
+      product_id: productIds.product_id,
+    })) as HydratedDocument<IMainProduct>;
+    path = `p/${product.product_id}`; //Path to revalidate when product stock is updated
+    if (productIds.combination_id) {
+      const index = product.combinations?.findIndex(
+        (combination) =>
+          productIds.combination_id === combination.combination_id
+      );
+      if (index !== undefined && product.combinations)
+        product.combinations[index].stock =
+          product.combinations[index].stock + quantity;
+    }
+    if (productIds.style_id) {
+      const index = product.style?.options.findIndex(
+        (option) => productIds.style_id === option.style_id
+      );
+      if (!productIds.combination_id && index !== undefined && product.style)
+        product.style.options[index].stock =
+          product.style.options[index].stock + quantity;
+      if (index !== undefined)
+        path = `/${path}/${product.style?.options[index].style_id}/${product.slug}-${product.style?.options[index].slug}`;
+    } else {
+      product.stock = product.stock + quantity;
+      path = `/${path}/${product.slug}`;
+    }
+    await product?.save();
+  } catch (error) {
+    console.log((error as Error).message);
+    return;
+  }
+  revalidatePath(path);
 };
