@@ -229,7 +229,8 @@ export interface IOrder {
   items: IOrderItem[];
   shipping_method: IShippingMethod;
   user_id: ObjectId | null;
-  customer_email?: string;
+  customer_email?: string | null;
+  customer_phone?: string | null;
   delivery_address?: IDeliveryAddress;
   status?: string;
   payment_reference?: string;
