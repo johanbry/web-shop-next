@@ -17,6 +17,7 @@ const OrderItemSchema = new Schema(
 
 const AddressSchema = new Schema(
   {
+    name: { type: String, required: true },
     street: { type: String, required: true },
     street2: { type: String },
     zipcode: { type: String, required: true },
@@ -41,6 +42,13 @@ const OrderSchema = new Schema(
       required: true,
     },
     customer_email: {
+      type: String,
+      required: function (this: { status: string }) {
+        // Only require delivery_address if status is not 'draft'
+        return this.status !== "draft";
+      },
+    },
+    customer_phone: {
       type: String,
       required: function (this: { status: string }) {
         // Only require delivery_address if status is not 'draft'
