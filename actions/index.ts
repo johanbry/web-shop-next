@@ -9,11 +9,18 @@ import {
   IShippingMethod,
   IShippingMethodOrder,
 } from "@/interfaces/interfaces";
-import { getProduct, getProductById, getProducts } from "@/lib/product";
+import {
+  getProduct,
+  getProductById,
+  getProducts,
+  updateStock,
+} from "@/lib/product";
 import Order from "@/models/Order";
+import Product from "@/models/Product";
 import initStripe from "@/utils/stripe";
+import { HydratedDocument } from "mongoose";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import Stripe from "stripe";
 
 /**
@@ -190,7 +197,7 @@ export const createAndPayOrder = async (
           price_data: {
             currency: "sek",
             product_data: {
-              name: item.name,
+              name: item.name + (item.options ? ` (${item.options})` : ""),
             },
             unit_amount: item.price * 100,
           },
@@ -221,7 +228,7 @@ export const createAndPayOrder = async (
       cancel_url: `${host}/kassa`,
     });
 
-    if (!stripeSession) {
+    if (!stripeSession || !stripeSession.id || !stripeSession.url) {
       throw new Error();
     }
   } catch (err) {
@@ -242,6 +249,17 @@ export const createAndPayOrder = async (
     return { error: "Order kunde inte skapas." };
   }
 
-  //Redirect to stripe hosted checkout page
-  redirect(stripeSession.url!);
+  //Reserve products by reducing stock
+  orderItems.forEach(async (item) => {
+    updateStock(
+      {
+        product_id: item.product_id,
+        style_id: item.style_id,
+        combination_id: item.combination_id,
+      },
+      -Math.abs(item.quantity) //Negative to subtract quantity
+    );
+  });
+
+  return { success: true, stripe_url: stripeSession.url };
 };
