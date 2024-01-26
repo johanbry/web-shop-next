@@ -4,11 +4,14 @@ import { useState } from "react";
 import ProductListCard from "./product-list-card";
 import { Box, Button, Center, Grid, GridCol, Stack, Text } from "@mantine/core";
 import { fetchProducts } from "@/actions";
-import { IAggregatedProduct } from "@/interfaces/interfaces";
+import {
+  IAggregatedListProduct,
+  IAggregatedProduct,
+} from "@/interfaces/interfaces";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 type Props = {
-  initialProducts: IAggregatedProduct[];
+  initialProducts: IAggregatedListProduct[];
   offset: number;
   limit: number;
   total: number;
@@ -33,7 +36,7 @@ const ProductList = ({
   const params = new URLSearchParams(searchParams.toString());
 
   const [products, setProducts] =
-    useState<IAggregatedProduct[]>(initialProducts);
+    useState<IAggregatedListProduct[]>(initialProducts);
   const [productsOffset, setProductsOffset] = useState(offset);
   const [isLoading, setIsLoading] = useState(false);
 

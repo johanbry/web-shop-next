@@ -14,6 +14,7 @@ import Link from "next/link";
 import NextImage from "next/image";
 import { IconPhoto } from "@tabler/icons-react";
 import {
+  IAggregatedListProduct,
   IAggregatedProduct,
   IProductImage,
   IProductStyleOption,
@@ -21,7 +22,7 @@ import {
 import { PRODUCT_IMAGES_PATH } from "@/utils/constants";
 
 type Props = {
-  product: IAggregatedProduct;
+  product: IAggregatedListProduct;
 };
 
 const ProductListCard = ({ product }: Props) => {
@@ -41,7 +42,7 @@ const ProductListCard = ({ product }: Props) => {
       (product.images && product.images[0]); //If the style product has no images, use the base product image
     styleOptions = product.style_options?.options;
     styleType = product.style_options?.type;
-    productHref = `/${productHref}/${product.style_product?.style_id}/${product.style_product?.slug}`;
+    productHref = `/${productHref}/${product.style_product?.style_id}/${product.slug}-${product.style_product?.slug}`;
   } else {
     productPrice = `${product.price} kr`;
     productImage = product.images && product.images[0];
