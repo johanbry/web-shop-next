@@ -1,4 +1,5 @@
 import { ObjectId } from "mongoose";
+import { z } from "zod";
 
 /**
  * Represents a product category as in the database.
@@ -256,7 +257,36 @@ export interface IUser {
   _id: ObjectId;
   name: string;
   email: string;
+  password?: string;
+  account?: string;
   role: IUserRole;
 }
 
 export type IUserRole = "customer" | "admin";
+
+export const CreateUserValidationSchema = z
+  .object({
+    name: z.string().min(2, { message: "Namn måste vara minst två bokstäver" }),
+    email: z.string().email({ message: "Ogiltig e-postadress" }),
+    password: z
+      .string()
+      .min(8, { message: "Lösenord måste vara minst 8 tecken" }),
+    passwordConfirmation: z
+      .string()
+      .min(8, { message: "Lösenord måste vara minst 8 tecken" }),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: "Lösenorden matchar inte",
+    path: ["passwordConfirmation"],
+  });
+
+export type CreateUserInput = z.infer<typeof CreateUserValidationSchema>;
+
+export const LoginUserValidationSchema = z.object({
+  email: z.string().email({ message: "Ogiltig e-postadress" }),
+  password: z
+    .string()
+    .min(8, { message: "Lösenord måste vara minst 8 tecken" }),
+});
+
+export type LoginUserInput = z.infer<typeof LoginUserValidationSchema>;
