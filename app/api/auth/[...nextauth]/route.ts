@@ -73,14 +73,4 @@ export const authOptions: NextAuthOptions = {
 
 const handler = NextAuth(authOptions);
 
-declare module "next-auth/jwt" {
-  /** Returned by the `jwt` callback and `getToken`, when using JWT sessions */
-  interface JWT {
-    user?: {
-      name: string;
-      id: string;
-    };
-  }
-}
-
 export { handler as GET, handler as POST };
