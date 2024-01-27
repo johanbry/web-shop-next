@@ -7,6 +7,7 @@ import "@mantine/core/styles.css";
 import "@mantine/carousel/styles.css";
 import "@mantine/notifications/styles.css";
 import CartProvider from "@/context/CartContext";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,10 +28,7 @@ export default function RootLayout({
       </head>
 
       <body className={inter.className}>
-        <MantineProvider>
-          <Notifications position="top-right" transitionDuration={400} />
-          <CartProvider>{children}</CartProvider>
-        </MantineProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
