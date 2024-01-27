@@ -1,6 +1,8 @@
 "use server";
 
 import {
+  CreateUserInput,
+  CreateUserValidationSchema,
   IAggregatedListProduct,
   IAggregatedProduct,
   ICartItem,
@@ -16,12 +18,13 @@ import {
   updateStock,
 } from "@/lib/product";
 import Order from "@/models/Order";
-import Product from "@/models/Product";
 import initStripe from "@/utils/stripe";
-import { HydratedDocument } from "mongoose";
-import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import Stripe from "stripe";
+import bcrypt from "bcrypt";
+import User from "@/models/User";
+import { IUser } from "@/interfaces/interfaces";
+import connectToDB from "@/utils/db";
 
 /**
  * Fetches products from the server.
@@ -262,4 +265,38 @@ export const createAndPayOrder = async (
   });
 
   return { success: true, stripe_url: stripeSession.url };
+};
+
+/**
+ * Creates a new user.
+ * @param newUser - The user data for the new user.
+ * @returns An object containing the created user or any errors that occurred during the creation process.
+ */
+export const createUser = async (newUser: CreateUserInput) => {
+  const result = CreateUserValidationSchema.safeParse(newUser);
+  if (!result.success) {
+    return {
+      fieldErrors: result.error.formErrors.fieldErrors,
+    };
+  }
+
+  try {
+    const userExists = await User.findOne({ email: result.data.email });
+    if (userExists) {
+      return { error: "Användare finns redan" };
+    }
+
+    const hashedPassword = await bcrypt.hash(result.data.password, 10);
+    await connectToDB();
+    const user: IUser = await User.create({
+      name: result.data.name,
+      email: result.data.email,
+      password: hashedPassword,
+      role: "customer",
+    });
+    delete user.password;
+    return { user: JSON.parse(JSON.stringify(user)) as IUser };
+  } catch (error) {
+    return { error: "Kontot kunde inte skapas, någonting gick fel" };
+  }
 };
