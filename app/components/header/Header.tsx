@@ -9,15 +9,14 @@ import {
   Group,
   Text,
 } from "@mantine/core";
-import { IconUser } from "@tabler/icons-react";
 import Search from "../search/search";
 import { useDisclosure } from "@mantine/hooks";
 import SidebarMenu from "../navigation/sidebar-menu";
 import { ICategoryInTree } from "@/interfaces/interfaces";
 import MainMenu from "../navigation/main-menu";
-import { useCartContext } from "@/context/CartContext";
 import CartDrawer from "../cart/cart-drawer";
-import CartHeaderIcon from "../cart/cart-header-icon";
+import CartHeaderButton from "../cart/cart-header-button";
+import HeaderUserButton from "./header-user-button";
 
 type Props = {
   categories: ICategoryInTree[];
@@ -49,10 +48,8 @@ const Header = ({ categories }: Props) => {
               <Search />
             </Box>
             <Group align="baseline">
-              <ActionIcon variant="transparent" size="lg" color="black">
-                <IconUser style={{ width: "100%", height: "100%" }} />
-              </ActionIcon>
-              <CartHeaderIcon />
+              <HeaderUserButton />
+              <CartHeaderButton />
             </Group>
           </Group>
         </Container>
