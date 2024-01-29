@@ -8,6 +8,7 @@ import {
   ICartItem,
   IMainProduct,
   IOrderItem,
+  ISessionUser,
   IShippingMethod,
   IShippingMethodOrder,
 } from "@/interfaces/interfaces";
@@ -25,6 +26,8 @@ import bcrypt from "bcrypt";
 import User from "@/models/User";
 import { IUser } from "@/interfaces/interfaces";
 import connectToDB from "@/utils/db";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 /**
  * Fetches products from the server.
@@ -131,6 +134,18 @@ export const createAndPayOrder = async (
   const host = headers().get("origin");
   let stripeSession: Stripe.Response<Stripe.Checkout.Session> | undefined;
 
+  let loggedInUserId: string | undefined = undefined;
+  let loggedInUserEmail: string | undefined = undefined;
+
+  const session = (await getServerSession(authOptions)) as unknown as {
+    user: ISessionUser;
+  };
+
+  if (session) {
+    loggedInUserId = session.user.id;
+    loggedInUserEmail = session.user.email;
+  }
+
   //Get product items from db to ensure we have the latest info and for security reasons and create order items
   try {
     orderItems = await Promise.all(
@@ -167,9 +182,8 @@ export const createAndPayOrder = async (
           combinationOption = `${product.variant?.type}: ${product.combination_product?.variant_name}`;
         }
 
-        options = `${styleOption || ""}${
-          styleOption && combinationOption ? "," : ""
-        }  ${combinationOption || ""}`;
+        options = [styleOption, combinationOption].filter(Boolean).join(", ");
+        if (options.length > 0) options = `(${options})`;
 
         const orderItem: IOrderItem = {
           product_id: cartItem.product_id,
@@ -200,7 +214,7 @@ export const createAndPayOrder = async (
           price_data: {
             currency: "sek",
             product_data: {
-              name: item.name + (item.options ? ` (${item.options})` : ""),
+              name: item.name + (item.options ? ` ${item.options}` : ""),
             },
             unit_amount: item.price * 100,
           },
@@ -226,6 +240,7 @@ export const createAndPayOrder = async (
           },
         },
       ],
+      customer_email: loggedInUserEmail || undefined,
       expires_at: Math.floor(Date.now() / 1000) + 3600 / 2, //Expire session in 30 minutes to return back stock
       success_url: `${host}/orderbekraftelse?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${host}/kassa`,
@@ -246,6 +261,7 @@ export const createAndPayOrder = async (
       status: orderStatus,
       payment_status: orderPaymentStatus,
       payment_reference: stripeSession.id,
+      user_id: loggedInUserId,
     });
   } catch (error) {
     console.log(error);
