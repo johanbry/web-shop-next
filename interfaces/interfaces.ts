@@ -262,6 +262,13 @@ export interface IUser {
   role: IUserRole;
 }
 
+export interface ISessionUser {
+  id: string;
+  name: string;
+  email: string;
+  role: IUserRole;
+}
+
 export type IUserRole = "customer" | "admin";
 
 export const CreateUserValidationSchema = z
