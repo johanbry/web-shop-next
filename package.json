@@ -16,6 +16,7 @@
     "@mantine/notifications": "^7.4.2",
     "@tabler/icons-react": "^2.45.0",
     "bcrypt": "^5.1.1",
+    "dayjs": "^1.11.10",
     "embla-carousel-react": "^7.1.0",
     "mantine-form-zod-resolver": "^1.1.0",
     "mongodb": "^6.3.0",
