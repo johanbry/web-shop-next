@@ -11,18 +11,24 @@
   "dependencies": {
     "@mantine/carousel": "^7.4.2",
     "@mantine/core": "^7.4.2",
+    "@mantine/form": "^7.5.0",
     "@mantine/hooks": "^7.4.2",
     "@mantine/notifications": "^7.4.2",
     "@tabler/icons-react": "^2.45.0",
+    "bcrypt": "^5.1.1",
     "embla-carousel-react": "^7.1.0",
+    "mantine-form-zod-resolver": "^1.1.0",
     "mongodb": "^6.3.0",
     "mongoose": "^8.0.3",
     "next": "14.0.4",
+    "next-auth": "^4.24.5",
     "react": "^18",
     "react-dom": "^18",
-    "stripe": "^14.13.0"
+    "stripe": "^14.13.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

@@ -6,7 +6,7 @@ const OrderItemSchema = new Schema(
     style_id: { type: String },
     combination_id: { type: String },
     name: { type: String, required: true },
-    options: { type: String, required: true },
+    options: { type: String },
     quantity: { type: Number, required: true },
     price: { type: Number, default: 0 },
     weight: { type: Number, default: 0 },

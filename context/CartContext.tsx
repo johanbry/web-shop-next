@@ -103,9 +103,8 @@ const CartProvider = ({ children }: PropsWithChildren) => {
       combinationOption = `${product.variant?.type}: ${product.combination_product?.variant_name}`;
     }
 
-    options = `${styleOption || ""}${
-      styleOption && combinationOption ? "," : ""
-    }  ${combinationOption || ""}`;
+    options = [styleOption, combinationOption].filter(Boolean).join(", ");
+    if (options.length > 0) options = `(${options})`;
 
     const itemIndex = cartItems.findIndex(
       (item: ICartItem) =>
