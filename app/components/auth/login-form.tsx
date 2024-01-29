@@ -9,23 +9,34 @@ import { showNotification } from "@/utils/showNotifications";
 import {
   Alert,
   Button,
+  Divider,
   PasswordInput,
   Stack,
   TextInput,
-  Title,
+  Text,
+  Center,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { IconInfoCircle } from "@tabler/icons-react";
+import {
+  IconBrandGoogle,
+  IconBrandGoogleFilled,
+  IconInfoCircle,
+} from "@tabler/icons-react";
 import { zodResolver } from "mantine-form-zod-resolver";
-import { set } from "mongoose";
 import { signIn } from "next-auth/react";
-import { redirect, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
-const LoginForm = () => {
+type Props = {
+  isAdmin?: boolean;
+};
+
+const LoginForm = ({ isAdmin }: Props) => {
   const [isPending, startTransition] = useTransition();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const router = useRouter();
+  const redirectUrl = isAdmin ? "/admin" : "/minasidor";
 
   const form = useForm({
     initialValues: {
@@ -42,7 +53,7 @@ const LoginForm = () => {
           email: values.email,
           password: values.password,
           redirect: false,
-          callbackUrl: "/minasidor",
+          callbackUrl: redirectUrl,
         });
 
         if (!response) {
@@ -51,10 +62,9 @@ const LoginForm = () => {
         }
         if (response?.error) {
           setErrorMessage(response.error);
-          //showNotification("Kunde inte logga in", response.error, "error");
           return;
         }
-        if (response.ok) router.replace(response.url || "/minasidor");
+        if (response.ok) router.replace(response.url || redirectUrl);
       });
     } catch (error) {
       showNotification(
@@ -68,7 +78,16 @@ const LoginForm = () => {
   return (
     <form onSubmit={form.onSubmit((values) => handleFormSubmit(values))}>
       <Stack gap="sm">
-        <Title order={4}>Logga in med e-post/lösenord</Title>
+        <Button
+          variant="outline"
+          fullWidth
+          size="lg"
+          leftSection={<IconBrandGoogleFilled />}
+          onClick={() => signIn("google", { callbackUrl: redirectUrl })}
+        >
+          Logga in med Google
+        </Button>
+        <Divider label="eller" size="sm" my="xs" />
         <TextInput
           withAsterisk
           label="E-post"
@@ -100,7 +119,7 @@ const LoginForm = () => {
           loading={isPending}
           aria-disabled={isPending}
         >
-          Logga in
+          Logga in med e-post/lösen
         </Button>
       </Stack>
     </form>
