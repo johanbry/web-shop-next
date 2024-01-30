@@ -4,7 +4,6 @@ const Home = () => {
   return (
     <Box>
       <Title order={2}>Välkommen till admin-sidorna!</Title>
-      <Text></Text>
     </Box>
   );
 };
