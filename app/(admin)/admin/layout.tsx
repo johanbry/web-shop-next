@@ -1,13 +1,15 @@
+import AppShellWrapper from "@/app/components/admin/app-shell-wrapper";
+
+export async function generateMetadata() {
+  return {
+    title: "Administrationspanelen",
+  };
+}
+
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <>
-      <div>Header admin</div>
-      <main>{children}</main>
-      <div>Footer admin</div>
-    </>
-  );
+  return <AppShellWrapper>{children}</AppShellWrapper>;
 }
