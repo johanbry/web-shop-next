@@ -1,6 +1,6 @@
 import AppShellWrapper from "@/app/components/admin/app-shell-wrapper";
 
-export async function generateMetadata() {
+export function generateMetadata() {
   return {
     title: "Administrationspanelen",
   };

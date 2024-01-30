@@ -271,6 +271,19 @@ export interface ISessionUser {
 
 export type IUserRole = "customer" | "admin";
 
+/**
+ * Represents a page.
+ */
+export interface IPage {
+  _id: ObjectId;
+  title: string;
+  slug: string;
+  content?: string;
+}
+
+/**
+ * Validation schema for creating a user.
+ */
 export const CreateUserValidationSchema = z
   .object({
     name: z.string().min(2, { message: "Namn måste vara minst två bokstäver" }),
@@ -287,8 +300,14 @@ export const CreateUserValidationSchema = z
     path: ["passwordConfirmation"],
   });
 
+/**
+ * Represents the input for creating a user.
+ */
 export type CreateUserInput = z.infer<typeof CreateUserValidationSchema>;
 
+/**
+ * Validation schema for login user data.
+ */
 export const LoginUserValidationSchema = z.object({
   email: z.string().email({ message: "Ogiltig e-postadress" }),
   password: z
@@ -296,4 +315,7 @@ export const LoginUserValidationSchema = z.object({
     .min(8, { message: "Lösenord måste vara minst 8 tecken" }),
 });
 
+/**
+ * Represents the input for logging in a user.
+ */
 export type LoginUserInput = z.infer<typeof LoginUserValidationSchema>;
