@@ -40,7 +40,7 @@ const AppShellWrapper = ({ children }: { children: React.ReactNode }) => {
             <Link href="/admin">
               <IconSettings size="2.5rem" />
             </Link>
-            <Title order={3}>FlexStore Admin</Title>
+            <Title order={3}>Admin</Title>
           </Group>
           <Header userInfo={session?.user?.name} />
         </Group>
