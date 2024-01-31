@@ -98,7 +98,7 @@ export const validateCartStock = async (cartItems: ICartItem[]) => {
       );
       if (product) {
         if (product.stock < item.quantity) {
-          const stock = product.stock < 0 ? 0 : product.stock;
+          const stock: number = product.stock < 0 ? 0 : product.stock;
           invalidItems.push({ ...item, stockDiff: item.quantity - stock });
         }
       }
