@@ -15,3 +15,17 @@ export const getPageBySlug = async (slug: string) => {
   }
   return JSON.parse(JSON.stringify(page)) as IPage;
 };
+
+/**
+ * Retrieves all pages.
+ * @returns An array of pages.
+ */
+export const getAllPages = async () => {
+  let pages: IPage[] = [];
+  try {
+    pages = await Page.find();
+  } catch (error) {
+    console.log((error as Error).message);
+  }
+  return JSON.parse(JSON.stringify(pages)) as IPage[];
+};

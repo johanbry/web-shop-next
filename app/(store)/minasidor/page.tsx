@@ -34,7 +34,8 @@ export default async function Page() {
 
   const user = session?.user as ISessionUser;
 
-  const orders: IOrder[] = await getOrdersByUserId(user.id);
+  let orders: IOrder[] = await getOrdersByUserId(user.id);
+  orders = orders.filter((order) => order.payment_status === "paid");
 
   if (!session) redirect("/loggain");
   return (

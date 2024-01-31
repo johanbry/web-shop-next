@@ -100,7 +100,10 @@ export default async function ProductPage({ params }: Props) {
     styleHasImages =
       styleOptions !== undefined &&
       styleOptions.every(
-        (option) => option.images && option.images[0].filename.length > 5
+        (option) =>
+          option.images &&
+          option.images.length > 0 &&
+          option.images[0].filename.length > 5
       );
   }
 

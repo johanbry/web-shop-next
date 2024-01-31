@@ -8,6 +8,7 @@ import {
   Drawer,
   Group,
   Text,
+  Title,
 } from "@mantine/core";
 import Search from "../search/search";
 import { useDisclosure } from "@mantine/hooks";
@@ -17,6 +18,8 @@ import MainMenu from "../navigation/main-menu";
 import CartDrawer from "../cart/cart-drawer";
 import CartHeaderButton from "../cart/cart-header-button";
 import HeaderUserButton from "./header-user-button";
+import Link from "next/link";
+import { IconTagStarred } from "@tabler/icons-react";
 
 type Props = {
   categories: ICategoryInTree[];
@@ -42,7 +45,10 @@ const Header = ({ categories }: Props) => {
                 hiddenFrom="sm"
                 onClick={toggleSidebarMenu}
               />
-              <Text size="lg">Logo</Text>
+              <Link href="/">
+                <IconTagStarred size="2.5rem" />
+              </Link>
+              <Title order={2}>AnyStore</Title>
             </Group>
             <Box visibleFrom="sm" w="400">
               <Search />

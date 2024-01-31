@@ -38,11 +38,10 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   if (!category) notFound();
 
   const total = await totalProducts(category._id.toString());
-  const productsLimit = 1;
+  const productsLimit = 4;
   const productsOffset = 0;
   const initialProductsLimit = Number(searchParams?.initlimit) || productsLimit;
   const subCategories = await getSubCategories(category._id);
-  console.log("searchParams initlimit", searchParams?.initlimit);
 
   const breadcrumbItems = await Promise.all(
     params.slug.map(async (slug, index) => {
@@ -69,6 +68,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   const subCategoryItems = subCategories.map((cat) => (
     <Button
+      mr="xs"
+      mb="xs"
       size="xs"
       radius={3}
       component={Link}

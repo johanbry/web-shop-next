@@ -40,7 +40,7 @@ const MainMenu = ({ categories }: Props) => {
         <Button
           variant="transparent"
           component={Link}
-          href={`${category.slug}`}
+          href={`/${category.slug}`}
           key={category._id}
         >
           {category.name}
