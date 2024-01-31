@@ -173,20 +173,6 @@ const Checkout = ({ shippingMethods }: Props) => {
             </Paper>
             {filteredShippingMethods && filteredShippingMethods.length > 0 && (
               <>
-                {validateStockErrorMessage && (
-                  <Center mb="lg">
-                    <Alert
-                      onClose={() => setValidateStockErrorMessage(null)}
-                      variant="light"
-                      color="red"
-                      withCloseButton
-                      title="Problem med lagersaldo"
-                      icon={<IconInfoCircle />}
-                    >
-                      {validateStockErrorMessage}
-                    </Alert>
-                  </Center>
-                )}
                 <Center>
                   <Button
                     w={300}
@@ -212,6 +198,20 @@ const Checkout = ({ shippingMethods }: Props) => {
         )
       )}
       {isClient && cartItems.length === 0 && <Text>Din varukorg är tom</Text>}
+      {validateStockErrorMessage && (
+        <Center my="lg">
+          <Alert
+            onClose={() => setValidateStockErrorMessage(null)}
+            variant="light"
+            color="red"
+            withCloseButton
+            title="Problem med lagersaldo"
+            icon={<IconInfoCircle />}
+          >
+            {validateStockErrorMessage}
+          </Alert>
+        </Center>
+      )}
     </>
   );
 };
