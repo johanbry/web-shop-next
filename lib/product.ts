@@ -2,6 +2,8 @@ import {
   IAggregatedListProduct,
   IAggregatedProduct,
   IMainProduct,
+  IProductListData,
+  IProductListMetadata,
   IProductType,
   ISelectedProductIds,
 } from "@/interfaces/interfaces";
@@ -90,18 +92,15 @@ export const getProduct = async (
 };
 
 /**
- * Get products from database, depending on category, search term, sort order, offset and limit.
- *
- * @param offset
- * @param limit
- * @param categoryId
- * @param sortOrder
- * @param searchTerm
- *
- * @returns products
- * */
-
-// TODO: Sorting and searching
+ * Retrieves a list of products based on the specified parameters.
+ * @param offset The number of products to skip in the result set. Default is 0.
+ * @param limit The maximum number of products to return. Default is 2.
+ * @param categoryId The ID of the category to filter the products by. Optional.
+ * @param sortOrder The sort order for the products. Optional.
+ * @param searchTerm The search term to match against the product name and description. Optional.
+ * @returns An object containing the list of products and metadata.
+ */
+// TODO: Sorting
 
 export const getProducts = async (
   offset: number = 0,
@@ -109,9 +108,20 @@ export const getProducts = async (
   categoryId?: string,
   sortOrder?: string,
   searchTerm?: string
-) => {
-  let products: IAggregatedListProduct[] = [];
+): Promise<IProductListData> => {
+  let products = [];
   const pipeline: PipelineStage[] = [];
+
+  if (searchTerm) {
+    pipeline.push({
+      $search: {
+        text: {
+          query: searchTerm,
+          path: ["name", "description"],
+        },
+      },
+    });
+  }
 
   if (categoryId) {
     pipeline.push({
@@ -131,8 +141,12 @@ export const getProducts = async (
   });
   pipeline.push({ $addFields: { style_product: "$style.options" } });
   pipeline.push({ $unset: ["style"] });
-  pipeline.push({ $skip: offset });
-  pipeline.push({ $limit: limit });
+  pipeline.push({
+    $facet: {
+      metadata: [{ $count: "total" }],
+      data: [{ $skip: offset }, { $limit: limit }],
+    },
+  });
 
   try {
     await connectToDB();
@@ -141,7 +155,14 @@ export const getProducts = async (
     console.log((error as Error).message);
   }
 
-  return JSON.parse(JSON.stringify(products)) as IAggregatedListProduct[];
+  const response: IProductListData = {
+    products: JSON.parse(
+      JSON.stringify(products[0].data)
+    ) as IAggregatedListProduct[],
+    metadata: products[0].metadata[0] as IProductListMetadata,
+  };
+
+  return response;
 };
 
 /**
