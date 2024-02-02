@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductListCard from "./product-list-card";
 import { Button, Center, Grid, GridCol, Stack, Text } from "@mantine/core";
 import { fetchProducts } from "@/actions";
@@ -36,6 +36,10 @@ const ProductList = ({
   const [productsOffset, setProductsOffset] = useState(offset);
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    setProducts(initialProducts);
+  }, [initialProducts]);
+
   const loadMoreProducts = async () => {
     setProductsOffset(productsOffset + limit);
 
@@ -66,7 +70,10 @@ const ProductList = ({
     <>
       <Grid>
         {products.map((product, index) => (
-          <GridCol key={index} span={{ base: 12, xs: 6, sm: 4, md: 4, lg: 3 }}>
+          <GridCol
+            key={product.product_id + index}
+            span={{ base: 12, xs: 6, sm: 4, md: 4, lg: 3 }}
+          >
             <ProductListCard product={product} />
           </GridCol>
         ))}
