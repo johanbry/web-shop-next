@@ -10,18 +10,20 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const categoryId = "65953d30733cc075b27dec53";
-  const total = await totalProducts(categoryId);
+  const categoryId = "";
+  //= "65953d30733cc075b27dec53";
   const productsLimit = 8;
   const productsOffset = 0;
   const initialProductsLimit = 8;
 
-  let products: IAggregatedListProduct[] = [];
-  products = await getProducts(
+  const productsData = await getProducts(
     productsOffset,
     initialProductsLimit,
     categoryId
   );
+
+  const products = productsData.products as IAggregatedListProduct[];
+  const total = productsData.metadata.total as number;
 
   return (
     <Container size="lg" px="0">
@@ -32,7 +34,7 @@ export default async function Home() {
             offset={productsOffset + initialProductsLimit}
             limit={productsLimit}
             total={total}
-            categoryId={categoryId}
+            categoryId={categoryId || undefined}
           />
         ) : (
           <Text>Inga produkter att visa</Text>

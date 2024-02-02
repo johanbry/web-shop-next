@@ -37,7 +37,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const currentPath = params.slug.join("/"); // The path of the current category
   if (!category) notFound();
 
-  const total = await totalProducts(category._id.toString());
+  //const total = await totalProducts(category._id.toString());
   const productsLimit = 4;
   const productsOffset = 0;
   const initialProductsLimit = Number(searchParams?.initlimit) || productsLimit;
@@ -81,12 +81,14 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     </Button>
   ));
 
-  let products: IAggregatedListProduct[] = [];
-  products = await getProducts(
+  const productsData = await getProducts(
     productsOffset,
     initialProductsLimit,
     category._id.toString()
   );
+
+  const products = productsData.products as IAggregatedListProduct[];
+  const total = productsData.metadata.total as number;
 
   return (
     <Container size="lg" px={0}>
