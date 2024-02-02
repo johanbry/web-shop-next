@@ -25,7 +25,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CategoryPage({ searchParams }: Props) {
   const searchTerm = searchParams?.q as string;
 
-  //const total = await totalProducts(category._id.toString());
+  let total = 0;
+
   const productsLimit = 4;
   const productsOffset = 0;
   const initialProductsLimit = Number(searchParams?.initlimit) || productsLimit;
@@ -39,13 +40,11 @@ export default async function CategoryPage({ searchParams }: Props) {
   );
 
   let products = productsData.products as IAggregatedListProduct[];
-  const total = productsData.metadata.total as number;
+  if (products && products.length > 0) total = productsData.metadata.total;
 
   return (
     <Container size="lg" px={0}>
-      <Breadcrumbs mb={6}>Hem</Breadcrumbs>
-      <Title mb={8}>{searchTerm}</Title>
-      <Text>Sökresultat för: {searchTerm}</Text>
+      <Title mb={8}>Sökresultat för &quot;{searchTerm}&quot;</Title>
 
       <Box my="var(--mantine-spacing-xl)">
         {total > 0 ? (
@@ -59,7 +58,7 @@ export default async function CategoryPage({ searchParams }: Props) {
             searchTerm={searchTerm}
           />
         ) : (
-          <Text>Inga produkter att visa</Text>
+          <Text>Inga produkter matchade sökningen</Text>
         )}
       </Box>
     </Container>
