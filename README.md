@@ -27,6 +27,7 @@ This is a project with the goal to develop a web shop suitable for any business 
     - Stock qty (and price) on each article item (base product, style option, combination)
     - Check availability when adding to cart
     - Check and possibly adjust entire cart before proceeding to payment
+    - Stock is reduced (reserved) when Stripe payment process is started, after 30 min without payment the checkout session expires and the stock is restored
 - Dynamic shipping selector
     - Filtered on cart amount and weight
     - Free shipping over amount
