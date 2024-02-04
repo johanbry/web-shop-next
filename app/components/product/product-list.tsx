@@ -36,10 +36,6 @@ const ProductList = ({
   const [productsOffset, setProductsOffset] = useState(offset);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    setProducts(initialProducts);
-  }, [initialProducts]);
-
   const loadMoreProducts = async () => {
     setProductsOffset(productsOffset + limit);
 
