@@ -69,7 +69,7 @@ export async function POST(request: Request) {
         });
         break;
       default:
-        console.log(`Unhandled event type ${event.type}`);
+      //console.log(`Unhandled event type ${event.type}`);
     }
   } catch (error) {
     console.log(`Webhook error: ${(error as Error).message}`);
