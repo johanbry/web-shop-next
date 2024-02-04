@@ -1,6 +1,56 @@
+# About the project - Web Shop Next
+
+This is a project with the goal to develop a web shop suitable for any business and any products. A flexible, versatile and scalable web shop application.
+
+## Functionality (Done implemented)
+
+- Categories in unlimited levels
+- Product model
+    - Base product with unlimited images
+    - Custom style options (optional) showing as separate products in product listings (typically color) with individual properties and unlimited images
+    - Custom variant options (optional, typically size)
+    - Style options and variant options combined to combinations with individual properties
+- Product listing
+    - Lazy loading pagination
+    - Number of loaded products persisted in the url to enable navigating back 
+- Shopping cart functionality (persisted client-side with local storage)
+- Search products (MongoDb Atlas Search)
+- Responsive
+- Stripe Checkout integrated (using webhooks for feedback)
+- Role based user accounts (Next Auth)
+    - Credentials and Google
+    - Create account
+    - Admin role needed to access admin area on '/admin' 
+- User and SEO-friendly urls
+- Breadcrumbs
+- Inventory
+    - Stock qty (and price) on each article item (base product, style option, combination)
+    - Check availability when adding to cart
+    - Check and possibly adjust entire cart before proceeding to payment
+- Dynamic shipping selector
+    - Filtered on cart amount and weight
+    - Free shipping over amount
+- Checkout as guest or logged
+- Account page showing all orders of customer
+
+### Functionality to come (not implemented)
+- Product listing sorting selection
+- Autocomplete for product search
+- Manage categories, products, users, shipping etc in admin area
+- and more...
+
+
+## Tech used
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+- TypeScript
+- Mantine components library
+- MongoDb (with Mongoose ODM)
+- Next Auth
+- ...and some npm packages
+
+## Run project
 
 First, run the development server:
 
@@ -16,21 +66,5 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
