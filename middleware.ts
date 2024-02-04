@@ -4,10 +4,7 @@ import { getToken } from "next-auth/jwt";
 
 //Middleware to protect customer area and admin area depending on logged in user role
 export async function middleware(req: NextRequest) {
-  console.log("middleware");
-
   const token = await getToken({ req });
-  console.log("token", token);
 
   //If not admin role, rewrite to show admin login page
   //if (req.nextUrl.pathname.startsWith("/admin") && token?.role !== "admin") {

@@ -8,7 +8,6 @@ const connectToDB = async () => {
         dbName: "webshop",
       }
     );
-    console.log(`MongoDB connected: ${connection.connection.host}`);
   } catch (error) {
     console.error(`Error: ${(error as Error).message}`);
   }

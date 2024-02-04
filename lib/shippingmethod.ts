@@ -10,7 +10,6 @@ export const getShippingMethods = async () => {
   } catch (error) {
     console.log((error as Error).message);
   }
-  console.log("shippingMethods: ", shippingMethods);
 
   return JSON.parse(JSON.stringify(shippingMethods));
 };

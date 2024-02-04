@@ -9,9 +9,7 @@ import {
   Text,
   Container,
   Title,
-  Button,
   Group,
-  Box,
   Accordion,
   Divider,
   AccordionItem,
@@ -30,7 +28,6 @@ export const metadata: Metadata = {
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
-  console.log("session", session);
 
   const user = session?.user as ISessionUser;
 
