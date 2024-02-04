@@ -49,6 +49,7 @@ export default async function CategoryPage({ searchParams }: Props) {
       <Box my="var(--mantine-spacing-xl)">
         {total > 0 ? (
           <ProductList
+            key={searchTerm}
             initialProducts={products}
             offset={productsOffset + initialProductsLimit}
             limit={productsLimit}
