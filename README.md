@@ -48,9 +48,11 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 - Mantine components library
 - MongoDb (with Mongoose ODM)
 - Next Auth
-- ...and some npm packages
+- and some npm packages, see package.json for all dependencies
 
 ## Run project
+
+This project is using Next.js version 14. You need Node.js minimum version 18.17.
 
 First, run the development server:
 
