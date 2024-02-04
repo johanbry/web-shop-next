@@ -1,14 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProductListCard from "./product-list-card";
-import { Box, Button, Center, Grid, GridCol, Stack, Text } from "@mantine/core";
+import { Button, Center, Grid, GridCol, Stack, Text } from "@mantine/core";
 import { fetchProducts } from "@/actions";
-import {
-  IAggregatedListProduct,
-  IAggregatedProduct,
-} from "@/interfaces/interfaces";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { IAggregatedListProduct } from "@/interfaces/interfaces";
+import { usePathname, useSearchParams } from "next/navigation";
 
 type Props = {
   initialProducts: IAggregatedListProduct[];
@@ -29,7 +26,6 @@ const ProductList = ({
   sortOrder,
   searchTerm,
 }: Props) => {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -44,13 +40,15 @@ const ProductList = ({
     setProductsOffset(productsOffset + limit);
 
     setIsLoading(true);
-    const products = await fetchProducts(
+    const productsData = await fetchProducts(
       productsOffset,
       limit,
       categoryId,
       sortOrder,
       searchTerm
     );
+
+    const products = productsData.products as IAggregatedListProduct[];
 
     setProducts((prev) => [...prev, ...products]);
     setIsLoading(false);
@@ -68,7 +66,10 @@ const ProductList = ({
     <>
       <Grid>
         {products.map((product, index) => (
-          <GridCol key={index} span={{ base: 12, xs: 6, sm: 4, md: 4, lg: 3 }}>
+          <GridCol
+            key={product.product_id + index}
+            span={{ base: 12, xs: 6, sm: 4, md: 4, lg: 3 }}
+          >
             <ProductListCard product={product} />
           </GridCol>
         ))}

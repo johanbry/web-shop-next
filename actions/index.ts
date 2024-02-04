@@ -8,6 +8,7 @@ import {
   ICartItem,
   IMainProduct,
   IOrderItem,
+  IProductListData,
   ISessionUser,
   IShippingMethod,
   IShippingMethodOrder,
@@ -32,12 +33,12 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 /**
  * Fetches products from the server.
  *
- * @param offset - The offset for pagination.
+ * @param offset - The offset value for pagination.
  * @param limit - The maximum number of products to fetch.
- * @param categoryId - The ID of the category to filter by.
+ * @param categoryId - The ID of the category to filter the products by.
  * @param sortOrder - The sort order for the products.
- * @param searchTerm - The search term to filter products by.
- * @returns A promise that resolves to an array of products.
+ * @param searchTerm - The search term to filter the products by.
+ * @returns A promise that resolves to the fetched products data.
  */
 export const fetchProducts = async (
   offset: number = 0,
@@ -46,12 +47,15 @@ export const fetchProducts = async (
   sortOrder?: string,
   searchTerm?: string
 ) => {
-  const products: IAggregatedListProduct[] = await getProducts(
+  const productsData = await getProducts(
     offset,
     limit,
-    categoryId
+    categoryId,
+    sortOrder,
+    searchTerm
   );
-  return products || [];
+
+  return productsData;
 };
 
 /**

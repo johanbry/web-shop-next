@@ -70,6 +70,15 @@ export interface IAggregatedProduct extends IBaseProduct {
   combination_product?: IProductCombination;
 }
 
+export interface IProductListData {
+  products: IAggregatedListProduct[];
+  metadata: IProductListMetadata;
+}
+
+export interface IProductListMetadata {
+  total: number;
+}
+
 /**
  * Represents a product image.
  */
